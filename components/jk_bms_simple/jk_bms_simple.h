@@ -73,18 +73,18 @@ class JkBmsSimple : public Component, public uart::UARTDevice {
 
  protected:
   void process_frames_();
-  void process_frame_(uint8_t frame_type, const std::vector<uint8_t> &data);
-  void parse_jk_frame_(const std::vector<uint8_t> &data);
+  void process_frame_(uint8_t frame_type, uint8_t address, const std::vector<uint8_t> &data);
+  void parse_jk_frame_(uint8_t address, const std::vector<uint8_t> &data);
   float bytes_to_float_(const uint8_t *bytes, bool is_signed = false);
   uint16_t bytes_to_uint16_(const uint8_t *bytes);
   uint32_t bytes_to_uint32_(const uint8_t *bytes);
   
   void handle_uart_data_(const std::vector<uint8_t> &data);
-  void decode_settings_(const std::vector<uint8_t> &data);
-  void decode_device_info_(const std::vector<uint8_t> &data);
-  void calculate_cell_statistics_();
+  void decode_settings_(uint8_t address, const std::vector<uint8_t> &data);
+  void decode_device_info_(uint8_t address, const std::vector<uint8_t> &data);
+  void calculate_cell_statistics_(uint8_t address);
   void publish_sensors_();
-  void publish_device_status_();
+  void publish_device_status_(uint8_t address);
   void reset_online_status_tracker_();
   uint32_t get_update_interval() const { return update_interval_; }
 
@@ -128,33 +128,37 @@ class JkBmsSimple : public Component, public uart::UARTDevice {
   text_sensor::TextSensor *device_info_sensor_{nullptr};
 
   // Data storage
-  float total_voltage_{0.0f};
-  float current_{0.0f};
-  float power_{0.0f};
-  float battery_soc_{0.0f};
-  float temperature_{0.0f};
-  float cell_voltages_[MAX_CELLS] = {0.0f};
-  uint8_t cell_count_real_{0};
-  float cell_voltage_min_{0.0f};
-  float cell_voltage_max_{0.0f};
-  float cell_voltage_average_{0.0f};
-  float cell_voltage_delta_{0.0f};
-  uint8_t cell_voltage_min_cell_number_{0};
-  uint8_t cell_voltage_max_cell_number_{0};
-  float battery_capacity_remaining_{0.0f};
-  float battery_capacity_total_{0.0f};
-  uint32_t charging_cycles_{0};
-  uint32_t total_runtime_{0};
-  float temperature_sensor_1_{0.0f};
-  float temperature_sensor_2_{0.0f};
-  float temperature_powertube_{0.0f};
-  bool status_charging_{false};
-  bool status_discharging_{false};
-  bool status_balancing_{false};
-  
-  uint32_t last_message_time_{0};
-  bool device_online_{false};
-  std::vector<uint8_t> rx_buffer_;
+  static const uint8_t MAX_BMS_UNITS = 4;
+  struct BmsData {
+    float total_voltage{0.0f};
+    float current{0.0f};
+    float power{0.0f};
+    float battery_soc{0.0f};
+    float temperature{0.0f};
+    float cell_voltages[MAX_CELLS]{0.0f};
+    uint8_t cell_count_real{0};
+    float cell_voltage_min{0.0f};
+    float cell_voltage_max{0.0f};
+    float cell_voltage_average{0.0f};
+    float cell_voltage_delta{0.0f};
+    uint8_t cell_voltage_min_cell_number{0};
+    uint8_t cell_voltage_max_cell_number{0};
+    float battery_capacity_remaining{0.0f};
+    float battery_capacity_total{0.0f};
+    uint32_t charging_cycles{0};
+    uint32_t total_runtime{0};
+    float temperature_sensor_1{0.0f};
+    float temperature_sensor_2{0.0f};
+    float temperature_powertube{0.0f};
+    bool status_charging{false};
+    bool status_discharging{false};
+    bool status_balancing{false};
+    bool device_online{false};
+    uint32_t last_message_time{0};
+    std::string device_info;
+  };
+  BmsData bms_data_[MAX_BMS_UNITS];
+
   uint32_t update_interval_{0};
   uint8_t address_{0};
 

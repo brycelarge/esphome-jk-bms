@@ -49,4 +49,4 @@ async def to_code(config):
         if key in config:
             conf = config[key]
             sens = await binary_sensor.new_binary_sensor(conf)
-            cg.add(getattr(hub, f"set_{key}_binary_sensor")(sens))
+            cg.add(getattr(hub, f"set_{key}_sensor")(sens))

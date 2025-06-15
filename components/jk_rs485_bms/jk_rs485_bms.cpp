@@ -1,7 +1,6 @@
-#include "jk_rs485_bms.h"
-#include "switch/jk_switch.h"
-#include "number/jk_number.h"
-#include "jk_rs485_sniffer.h"
+#include "esphome/components/jk_rs485_bms/jk_rs485_bms.h"
+#include "esphome/components/jk_rs485_bms/switch/jk_switch.h"
+#include "esphome/components/jk_rs485_bms/number/jk_number.h"
 
 //std::string uint32_to_binary(uint32_t value) {
 //    std::string binary_representation(32, '0');

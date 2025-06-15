@@ -3,7 +3,7 @@
 #include "esphome/components/binary_sensor/binary_sensor.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/text_sensor/text_sensor.h"
-#include "../jk_rs485_sniffer/jk_rs485_sniffer.h"
+#include "esphome/components/jk_rs485_sniffer/jk_rs485_sniffer.h"
 //#include "esphome/core/component.h"
 
 float uint32_to_float(const uint8_t* byteArray);

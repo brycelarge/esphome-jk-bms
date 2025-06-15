@@ -26,6 +26,16 @@ AUTO_LOAD = ["sensor", "binary_sensor", "text_sensor"]
 jk_bms_simple_ns = cg.esphome_ns.namespace("jk_bms_simple")
 JkBmsSimple = jk_bms_simple_ns.class_("JkBmsSimple", cg.Component, uart.UARTDevice)
 
+# Configuration constants
+CONF_JK_BMS_SIMPLE_ID = "jk_bms_simple_id"
+
+# Component schema
+JK_BMS_SIMPLE_COMPONENT_SCHEMA = cv.Schema(
+    {
+        cv.Required(CONF_JK_BMS_SIMPLE_ID): cv.use_id(JkBmsSimple),
+    }
+)
+
 # Cell voltage sensor names
 CELL_VOLTAGE_SENSORS = [f"cell_voltage_{i:02d}" for i in range(1, 33)]
 

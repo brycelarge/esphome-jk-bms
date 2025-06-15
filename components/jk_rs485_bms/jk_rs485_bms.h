@@ -3,8 +3,14 @@
 #include "esphome/components/binary_sensor/binary_sensor.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/text_sensor/text_sensor.h"
-#include "esphome/components/jk_rs485_sniffer/jk_rs485_sniffer.h"
 //#include "esphome/core/component.h"
+
+// Forward declarations
+namespace esphome {
+namespace jk_rs485_sniffer {
+class JkRS485Sniffer;
+}  // namespace jk_rs485_sniffer
+}  // namespace esphome
 
 float uint32_to_float(const uint8_t* byteArray);
 float int32_to_float(const uint8_t* byteArray);
@@ -12,10 +18,6 @@ float uint16_to_float(const uint8_t *byteArray);
 float int16_to_float(const uint8_t *byteArray);
 
 namespace esphome {
-
-namespace jk_rs485_sniffer {
-class JkRS485Sniffer;  // Declaración anticipada
-};
 
 
 namespace jk_rs485_bms {

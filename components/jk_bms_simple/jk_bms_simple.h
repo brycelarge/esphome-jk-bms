@@ -153,6 +153,7 @@ class JkBmsSimple : public Component, public uart::UARTDevice {
   bool device_online_{false};
   std::vector<uint8_t> rx_buffer_;
   uint32_t update_interval_{0};
+  uint8_t address_{0};
 
 };
 

@@ -1,5 +1,6 @@
 #include "jk_rs485_bms.h"
-
+#include "switch/jk_switch.h"
+#include "number/jk_number.h"
 
 //std::string uint32_to_binary(uint32_t value) {
 //    std::string binary_representation(32, '0');
@@ -103,7 +104,7 @@ void JkRS485Bms::JkRS485Bms_init(void) {
 */
     this->status_online_binary_sensor_= new binary_sensor::BinarySensor();
     this->status_balancing_binary_sensor_= new binary_sensor::BinarySensor();
-    this->status_precharging_binary_sensor_= new binary_sensor::BinarySensor();  
+    this->status_precharging_binary_sensor_= new binary_sensor::BinarySensor();
     this->status_charging_binary_sensor_= new binary_sensor::BinarySensor();
     this->status_discharging_binary_sensor_= new binary_sensor::BinarySensor();
     this->status_heating_binary_sensor_= new binary_sensor::BinarySensor();
@@ -137,18 +138,18 @@ void JkRS485Bms::JkRS485Bms_init(void) {
     this->alarm_battempsensor2absent_binary_sensor_= new binary_sensor::BinarySensor();
     this->alarm_battempsensor3absent_binary_sensor_= new binary_sensor::BinarySensor();
     this->alarm_battempsensor4absent_binary_sensor_= new binary_sensor::BinarySensor();
-    this->alarm_battempsensor5absent_binary_sensor_= new binary_sensor::BinarySensor();    
+    this->alarm_battempsensor5absent_binary_sensor_= new binary_sensor::BinarySensor();
 
     this->battery_total_alarms_count_sensor_= new sensor::Sensor();
     this->battery_total_alarms_active_sensor_= new sensor::Sensor();
     this->smart_sleep_time_sensor_= new sensor::Sensor();
     this->emergency_time_countdown_sensor_= new sensor::Sensor();
-  
 
-    this->balancing_direction_sensor_= new sensor::Sensor(); 
+
+    this->balancing_direction_sensor_= new sensor::Sensor();
     this->max_discharging_current_sensor_= new sensor::Sensor();
-    this->scp_recovery_time_number_= new sensor::Sensor();    
-    this->total_battery_capacity_number_= new sensor::Sensor();  
+    this->scp_recovery_time_number_= new sensor::Sensor();
+    this->total_battery_capacity_number_= new sensor::Sensor();
 
     this->discharging_overcurrent_protection_release_time_sensor_= new sensor::Sensor();
     this->discharging_short_circuit_protection_release_time_sensor_= new sensor::Sensor();
@@ -161,11 +162,11 @@ void JkRS485Bms::JkRS485Bms_init(void) {
     this->cell_voltage_min_sensor_= new sensor::Sensor();
     this->cell_voltage_max_sensor_= new sensor::Sensor();
     this->cell_resistance_min_sensor_= new sensor::Sensor();
-    this->cell_resistance_max_sensor_= new sensor::Sensor();  
+    this->cell_resistance_max_sensor_= new sensor::Sensor();
     this->cell_voltage_min_cell_number_sensor_= new sensor::Sensor();
     this->cell_voltage_max_cell_number_sensor_= new sensor::Sensor();
     this->cell_resistance_min_cell_number_sensor_= new sensor::Sensor();
-    this->cell_resistance_max_cell_number_sensor_= new sensor::Sensor();  
+    this->cell_resistance_max_cell_number_sensor_= new sensor::Sensor();
     this->cell_delta_voltage_sensor_= new sensor::Sensor();
     this->cell_average_voltage_sensor_= new sensor::Sensor();
     this->temperature_powertube_sensor_= new sensor::Sensor();
@@ -217,59 +218,59 @@ void JkRS485Bms::JkRS485Bms_init(void) {
     this->heating_current_sensor_= new sensor::Sensor();
     this->balancing_current_sensor_= new sensor::Sensor();
     this->uart1_protocol_number_sensor_= new sensor::Sensor();
-    this->uart2_protocol_number_sensor_= new sensor::Sensor();  
+    this->uart2_protocol_number_sensor_= new sensor::Sensor();
 
 
     this->cell_smart_sleep_voltage_number_  = new JkRS485BmsNumber();
     this->cell_undervoltage_protection_number_ = new JkRS485BmsNumber();
     this->cell_undervoltage_protection_recovery_number_ = new JkRS485BmsNumber();
     this->cell_overvoltage_protection_number_ = new JkRS485BmsNumber();
-    this->cell_overvoltage_protection_recovery_number_ = new JkRS485BmsNumber();   
-    this->cell_balancing_trigger_voltage_number_ = new JkRS485BmsNumber();   
-    this->cell_soc100_voltage_number_ = new JkRS485BmsNumber();   
-    this->cell_soc0_voltage_number_ = new JkRS485BmsNumber();  
-    this->cell_request_charge_voltage_number_ = new JkRS485BmsNumber();   
-    this->cell_request_float_voltage_number_ = new JkRS485BmsNumber();  
-    this->cell_power_off_voltage_number_ = new JkRS485BmsNumber();  
-    this->cell_balancing_starting_voltage_number_ = new JkRS485BmsNumber(); 
-    this->max_charging_current_number_ = new JkRS485BmsNumber();  
+    this->cell_overvoltage_protection_recovery_number_ = new JkRS485BmsNumber();
+    this->cell_balancing_trigger_voltage_number_ = new JkRS485BmsNumber();
+    this->cell_soc100_voltage_number_ = new JkRS485BmsNumber();
+    this->cell_soc0_voltage_number_ = new JkRS485BmsNumber();
+    this->cell_request_charge_voltage_number_ = new JkRS485BmsNumber();
+    this->cell_request_float_voltage_number_ = new JkRS485BmsNumber();
+    this->cell_power_off_voltage_number_ = new JkRS485BmsNumber();
+    this->cell_balancing_starting_voltage_number_ = new JkRS485BmsNumber();
+    this->max_charging_current_number_ = new JkRS485BmsNumber();
     this->charging_overcurrent_protection_delay_number_ = new JkRS485BmsNumber();
     this->charging_overcurrent_protection_recovery_delay_number_ = new JkRS485BmsNumber();
-    this->max_discharging_current_number_ = new JkRS485BmsNumber();  
+    this->max_discharging_current_number_ = new JkRS485BmsNumber();
     this->discharging_overcurrent_protection_delay_number_ = new JkRS485BmsNumber();
-    this->discharging_overcurrent_protection_recovery_delay_number_ = new JkRS485BmsNumber();    
-    this->short_circuit_protection_delay_number_ = new JkRS485BmsNumber(); 
-    this->short_circuit_protection_recovery_delay_number_ = new JkRS485BmsNumber(); 
-    this->max_balancing_current_number_ = new JkRS485BmsNumber(); 
-    this->charging_overtemperature_protection_number_ = new JkRS485BmsNumber(); 
-    this->charging_overtemperature_protection_recovery_number_ = new JkRS485BmsNumber(); 
-    this->discharging_overtemperature_protection_number_ = new JkRS485BmsNumber(); 
-    this->discharging_overtemperature_protection_recovery_number_ = new JkRS485BmsNumber(); 
-    this->charging_lowtemperature_protection_number_ = new JkRS485BmsNumber(); 
-    this->charging_lowtemperature_protection_recovery_number_ = new JkRS485BmsNumber(); 
-    this->mos_overtemperature_protection_number_ = new JkRS485BmsNumber(); 
-    this->mos_overtemperature_protection_recovery_number_ = new JkRS485BmsNumber();   
-    this->cell_count_settings_number_ = new JkRS485BmsNumber();   
-    this->battery_capacity_total_settings_number_ = new JkRS485BmsNumber();   
-    this->precharging_time_from_discharge_number_ = new JkRS485BmsNumber();   
-    this->cell_request_charge_voltage_time_number_ = new JkRS485BmsNumber();   
-    this->cell_request_float_voltage_time_number_ = new JkRS485BmsNumber();   
-    
+    this->discharging_overcurrent_protection_recovery_delay_number_ = new JkRS485BmsNumber();
+    this->short_circuit_protection_delay_number_ = new JkRS485BmsNumber();
+    this->short_circuit_protection_recovery_delay_number_ = new JkRS485BmsNumber();
+    this->max_balancing_current_number_ = new JkRS485BmsNumber();
+    this->charging_overtemperature_protection_number_ = new JkRS485BmsNumber();
+    this->charging_overtemperature_protection_recovery_number_ = new JkRS485BmsNumber();
+    this->discharging_overtemperature_protection_number_ = new JkRS485BmsNumber();
+    this->discharging_overtemperature_protection_recovery_number_ = new JkRS485BmsNumber();
+    this->charging_lowtemperature_protection_number_ = new JkRS485BmsNumber();
+    this->charging_lowtemperature_protection_recovery_number_ = new JkRS485BmsNumber();
+    this->mos_overtemperature_protection_number_ = new JkRS485BmsNumber();
+    this->mos_overtemperature_protection_recovery_number_ = new JkRS485BmsNumber();
+    this->cell_count_settings_number_ = new JkRS485BmsNumber();
+    this->battery_capacity_total_settings_number_ = new JkRS485BmsNumber();
+    this->precharging_time_from_discharge_number_ = new JkRS485BmsNumber();
+    this->cell_request_charge_voltage_time_number_ = new JkRS485BmsNumber();
+    this->cell_request_float_voltage_time_number_ = new JkRS485BmsNumber();
+
 
     for (uint8_t i = 0; i < 32; ++i) {
         cells_[i].cell_voltage_sensor_ = new sensor::Sensor();
         cells_[i].cell_resistance_sensor_ = new sensor::Sensor();
         //cells_[i].cell_voltage3_sensor_ = new sensor::Sensor();
     }
-    
+
     for (uint8_t i = 0; i < 32; ++i) {
         cells_[i].cell_voltage_sensor_ = nullptr;
         cells_[i].cell_resistance_sensor_ = nullptr;
     }
-    
-    
-     
-}  
+
+
+
+}
 
 
 void JkRS485Bms::set_disable_pcl_module_switch(JkRS485BmsSwitch *disable_pcl_module_switch) {this->disable_pcl_module_switch_ = disable_pcl_module_switch;}
@@ -386,7 +387,7 @@ static const char *const BATTERY_TYPES[BATTERY_TYPES_SIZE] = {
 
 
 
-//void JkRS485Bms::set_parent(JkRS485Sniffer *parent) { 
+//void JkRS485Bms::set_parent(JkRS485Sniffer *parent) {
 void JkRS485Bms::set_sniffer_parent(jk_rs485_sniffer::JkRS485Sniffer* parent) {
     if (parent == nullptr) {
         ESP_LOGE(TAG, "Trying to set parent to null");
@@ -468,7 +469,7 @@ void JkRS485Bms::trigger_bms2sniffer_switch16_event(std::uint16_t register_addre
       (this->smart_sleep_on_switch_->is_ready()) &&
       (this->disable_pcl_module_switch_->is_ready()) &&
       (this->timed_stored_data_switch_->is_ready()) &&
-      (this->charging_float_mode_switch_->is_ready()) 
+      (this->charging_float_mode_switch_->is_ready())
     ) {
       value_to_send = this->charging_float_mode_switch_->state;
       value_to_send = (value_to_send << 1) | this->timed_stored_data_switch_->state;
@@ -518,8 +519,8 @@ void JkRS485Bms::trigger_bms2sniffer_number16_event(std::uint16_t register_addre
       uint8_t high = static_cast<uint8_t>(this->cell_request_charge_voltage_time_number_->state*10);
       uint8_t low = static_cast<uint8_t>(this->cell_request_float_voltage_time_number_->state*10);
 
-      value_to_send = (static_cast<uint16_t>(high) << 8) | low;      
-      
+      value_to_send = (static_cast<uint16_t>(high) << 8) | low;
+
       // Log final
       //char binary_str[65]; // 64 bits + 1 for null terminator
       //uint64_to_binary_str(value_to_send, binary_str, sizeof(binary_str));
@@ -568,9 +569,9 @@ void JkRS485Bms::on_jk_rs485_sniffer_data(const uint8_t &origin_address, const u
           if (this->cell_count_settings_number_->state>0){
             this->decode_jk02_cell_info_(data);
           } else {
-            ESP_LOGI(TAG, "Frame type 0x%02X received from address 0x%02X. But 0x01 frame type must be processed first", frame_type,origin_address);      
+            ESP_LOGI(TAG, "Frame type 0x%02X received from address 0x%02X. But 0x01 frame type must be processed first", frame_type,origin_address);
           }
-          
+
         }
         break;
       case 0x03:
@@ -589,7 +590,7 @@ void JkRS485Bms::on_jk_rs485_sniffer_data(const uint8_t &origin_address, const u
     } else {
       ESP_LOGI(TAG, "Cannot set ONLINE until arrived both 0x01 and 0x02 frame types");
     }
-      
+
   } else {
     ESP_LOGD(TAG, "This BMS address is: %d  and address received %d ==> IDLE", this->address_, origin_address);
   }
@@ -662,7 +663,7 @@ void JkRS485Bms::decode_jk02_cell_info_(const std::vector<uint8_t> &data) {
   uint8_t cell_voltage_min_cell_number = 0;
   uint8_t cell_voltage_max_cell_number = 0;
   uint8_t cell_resistance_min_cell_number = 0;
-  uint8_t cell_resistance_max_cell_number = 0;  
+  uint8_t cell_resistance_max_cell_number = 0;
   float cell_voltage;
   float cell_resistance;
 
@@ -692,7 +693,7 @@ void JkRS485Bms::decode_jk02_cell_info_(const std::vector<uint8_t> &data) {
       if (cell_resistance > cell_resistance_max) {
         cell_resistance_max = cell_resistance;
         cell_resistance_max_cell_number=i;
-      } 
+      }
     }
 
 
@@ -706,7 +707,7 @@ void JkRS485Bms::decode_jk02_cell_info_(const std::vector<uint8_t> &data) {
       this->publish_state_(this->cells_[i].cell_voltage_sensor_, cell_voltage);
     }
     ESP_LOGD(TAG, "                  --> R: %fohm",cell_resistance);
-    this->publish_state_(this->cells_[i].cell_resistance_sensor_, cell_resistance);  
+    this->publish_state_(this->cells_[i].cell_resistance_sensor_, cell_resistance);
 
     //cell_count_real=i;
     //ESP_LOGV(TAG, "Cell %02d voltage:    %f", i, cell_voltage);
@@ -714,7 +715,7 @@ void JkRS485Bms::decode_jk02_cell_info_(const std::vector<uint8_t> &data) {
   }
 
 
-  
+
   ESP_LOGVV(TAG, "Debug point 001");
   this->publish_state_(this->cell_count_real_sensor_, (float) cell_count_real);
   this->publish_state_(this->cell_voltage_min_sensor_, cell_voltage_min);
@@ -825,7 +826,7 @@ void JkRS485Bms::decode_jk02_cell_info_(const std::vector<uint8_t> &data) {
         ESP_LOGI(TAG, "alarm_ChSCP_binary_sensor_:                    %d", this->check_bit_of_byte_(data[134], 7));*/
   }
 
-//  # Bit 0     Wire resistance                              0000 0000 0000 0001         0x0001 
+//  # Bit 0     Wire resistance                              0000 0000 0000 0001         0x0001
 //  # Bit 1     MOS OTP                                      0000 0000 0000 0010         0x0002
 //  # Bit 2     Cell quantity                                0000 0000 0000 0100         0x0004
 //  # Bit 3     Current sensor error                         0000 0000 0000 1000         0x0008
@@ -956,9 +957,9 @@ void JkRS485Bms::decode_jk02_cell_info_(const std::vector<uint8_t> &data) {
   temp_param_value=uint32_to_float(&data[162+offset]);
   //ESP_LOGV(TAG, "       1] temp_param_value: %f", temp_param_value);
   this->publish_state_(this->battery_total_runtime_sensor_, temp_param_value); //  (float) jk_get_32bit(162 + offset));
-  //ESP_LOGV(TAG, "       2] temp_param_value: %f", temp_param_value);  
+  //ESP_LOGV(TAG, "       2] temp_param_value: %f", temp_param_value);
   this->publish_state_(this->total_runtime_formatted_text_sensor_, format_total_runtime_(temp_param_value));
-  //ESP_LOGV(TAG, "       3] temp_param_value: %f", temp_param_value);  
+  //ESP_LOGV(TAG, "       3] temp_param_value: %f", temp_param_value);
 
   // 166  [192=166+26]   1   0x01                   Charging mosfet enabled                      0x00: off, 0x01: on
   this->publish_state_(this->status_charging_binary_sensor_, this->check_bit_of_byte_(data[166 + offset], 0));
@@ -968,19 +969,19 @@ void JkRS485Bms::decode_jk02_cell_info_(const std::vector<uint8_t> &data) {
   //ESP_LOGV(TAG, "DISCHARGE WORKING STATUS: 0x%02X", data[167 + offset]);
 
 
-  // .........  
+  // .........
   // 170  [196=170+26] 2                          TimeDcOCPR   Time for Discharge Overcurrent Protection Release
   this->publish_state_(this->discharging_overcurrent_protection_release_time_sensor_, uint16_to_float(&data[170+offset]));    //  (float) jk_get_16bit(170 + offset));
   // 172  [198=172+26] 2                          TimeDcSCPR   Time for Discharge Short Circuit Protection Release
   this->publish_state_(this->discharging_short_circuit_protection_release_time_sensor_, uint16_to_float(&data[172+offset]));    // (float) jk_get_16bit(172 + offset));
   // 174  [200=174+26] 2                          TimeCOCPR    Time for Charge Overcurrent Protection Release
-  this->publish_state_(this->charging_overcurrent_protection_release_time_sensor_, uint16_to_float(&data[174+offset]));    // (float) jk_get_16bit(174 + offset));   
+  this->publish_state_(this->charging_overcurrent_protection_release_time_sensor_, uint16_to_float(&data[174+offset]));    // (float) jk_get_16bit(174 + offset));
   // 176  [202=176+26] 2                          TimeCSCPR    Time for Charge Short Circuit Protection Release
-  this->publish_state_(this->charging_short_circuit_protection_release_time_sensor_, uint16_to_float(&data[176+offset]));    // (float) jk_get_16bit(176 + offset)); 
+  this->publish_state_(this->charging_short_circuit_protection_release_time_sensor_, uint16_to_float(&data[176+offset]));    // (float) jk_get_16bit(176 + offset));
   // 178  [204=178+26] 2                          TimeUVPR     Time for Single Cell Under Voltage Protection Release
-  this->publish_state_(this->cell_undervoltage_protection_release_time_sensor_, uint16_to_float(&data[178+offset]));    //  (float) jk_get_16bit(178 + offset)); 
+  this->publish_state_(this->cell_undervoltage_protection_release_time_sensor_, uint16_to_float(&data[178+offset]));    //  (float) jk_get_16bit(178 + offset));
   // 180  [206=180+26] 2                          TimeOVPR     Time for Single Cell Over Voltage Protection Release
-  this->publish_state_(this->cell_overvoltage_protection_release_time_sensor_, uint16_to_float(&data[180+offset]));    // (float) jk_get_16bit(180 + offset)); 
+  this->publish_state_(this->cell_overvoltage_protection_release_time_sensor_, uint16_to_float(&data[180+offset]));    // (float) jk_get_16bit(180 + offset));
   // .........
 
 
@@ -1004,15 +1005,15 @@ void JkRS485Bms::decode_jk02_cell_info_(const std::vector<uint8_t> &data) {
   //ESP_LOGD(TAG, "Unknown189: 0x%02X 0x%02X", data[189], data[190]);
   // 190   1   0x00                   Unknown190
   // 191   1   0x00                   Balancer status (working: 0x01, idle: 0x00)
-  
+
   // 193   2   0x00 0xAE              Unknown193
   //ESP_LOGD(TAG, "Unknown193: 0x%02X 0x%02X (0x00 0x8D)", data[193 + offset], data[194 + offset]);
   // 195   2   0xD6 0x3B              Unknown195
   //ESP_LOGD(TAG, "Unknown195: 0x%02X 0x%02X (0x21 0x40)", data[195 + offset], data[196 + offset]);
   // 197   10  0x40 0x00 0x00 0x00 0x00 0x58 0xAA 0xFD 0xFF 0x00
 
-                      
-  
+
+
   // 202 [228=202+26]                          228.Battery Voltage       0.01         V   (repeated. More precision at 118)
   //battery_voltage = (float) jk_get_32bit(202 + offset) * 0.01f;
   //ESP_LOGI(TAG, " BATTERY VOLTAGE 228: %f", battery_voltage);
@@ -1022,24 +1023,24 @@ void JkRS485Bms::decode_jk02_cell_info_(const std::vector<uint8_t> &data) {
   //ESP_LOGV(TAG, "HEATING CURRENT:  %f", int16_to_float(&data[204+offset])  * 0.001f);
 
   // 207   7   0x00 0x00 0x01 0x00 0x02 0x00 0x00
-  
+
   // 212 [186=160+26]  // 214   4   0xEC 0xE6 0x4F 0x00    Uptime 100ms
 
   //--------------------------------------------------------------------------------------
   // 214 [240=214+26] 240.SysRunTics
-  
+
   // 222 [248=222+26] 248.Temp Bat 3
   // 224 [250=224+26] 250.Temp Bat 4
   // 226 [252=226+26] 252.Temp Bat 5
   this->publish_state_(this->temperatures_[2].temperature_sensor_, int16_to_float(&data[222+offset]) * 0.1f);
   this->publish_state_(this->temperatures_[3].temperature_sensor_, int16_to_float(&data[224+offset]) * 0.1f);
   this->publish_state_(this->temperatures_[4].temperature_sensor_, int16_to_float(&data[226+offset]) * 0.1f);
-  
-  
+
+
   if (frame_version == FRAME_VERSION_JK02_32S) {
-    // 182 [208=182+26]                             208.Alarms...  
+    // 182 [208=182+26]                             208.Alarms...
     // ** [JK-PB2A16S-20P v14]
-    //    bit0: MOSTempSensorAbsent                    1    
+    //    bit0: MOSTempSensorAbsent                    1
     //    bit1: BATTempSensor1Absent                   2     1: normal, 0: alarm
     //    bit2: BATTempSensor2Absent                   4     1: normal, 0: alarm
     //    bit3: BATTempSensor3Absent                   8     1: normal, 0: alarm
@@ -1055,7 +1056,7 @@ void JkRS485Bms::decode_jk02_cell_info_(const std::vector<uint8_t> &data) {
     this->publish_alarm_state_(this->alarm_battempsensor5absent_binary_sensor_, !this->check_bit_of_byte_(data[(182 + offset)], 5));
 
     // 180 [212=180+32]
-    
+
     //          206
     //ESP_LOGV(TAG, "  TimeUVPR??:  %f", uint16_to_float(&data[178+offset]));  // ((int16_t) jk_get_16bit(178 + offset)));
     //ESP_LOGV(TAG, "  TimeOVPR??:  %f", uint16_to_float(&data[180+offset]));  // ((int16_t) jk_get_16bit(180 + offset)));
@@ -1089,7 +1090,7 @@ void JkRS485Bms::decode_jk02_cell_info_(const std::vector<uint8_t> &data) {
     this->publish_state_(this->battery_total_alarms_active_sensor_, (float) this->battery_total_alarms_active_);
   }
   this->status_notification_received_ = true;
-  this->trigger_bms2sniffer_event("WORKING ! #####",02);  
+  this->trigger_bms2sniffer_event("WORKING ! #####",02);
 }
 
 void JkRS485Bms::decode_jk02_settings_(const std::vector<uint8_t> &data) {
@@ -1138,47 +1139,47 @@ void JkRS485Bms::decode_jk02_settings_(const std::vector<uint8_t> &data) {
   this->publish_state_(this->cell_undervoltage_protection_recovery_number_, temp_param_value); /// (float) jk_get_32bit(14) * 0.001f);
 
   // 18 [12]   4   0xCC 0x10 0x00 0x00    Cell OVP
-  temp_param_value = uint32_to_float(&data[18]) * 0.001f;  
+  temp_param_value = uint32_to_float(&data[18]) * 0.001f;
   ///ESP_LOGV(TAG, "%02X%02X%02X%02X Cell OVP: %f V", data[18], data[19], data[20], data[21], (float) jk_get_32bit(18));
   this->publish_state_(this->cell_overvoltage_protection_number_, temp_param_value); ///(float) jk_get_32bit(18) * 0.001f);
 
   // 22 [16]   4   0x68 0x10 0x00 0x00    Cell OVP Recovery
-  temp_param_value = uint32_to_float(&data[22]) * 0.001f; 
+  temp_param_value = uint32_to_float(&data[22]) * 0.001f;
   //ESP_LOGI(TAG, "  Cell OVPR: %f V", temp_param_value); /// (float) jk_get_32bit(22) * 0.001f);
   this->publish_state_(this->cell_overvoltage_protection_recovery_number_, temp_param_value); ///(float) jk_get_32bit(22) * 0.001f);
 
   // 26 [20]   4   0x0A 0x00 0x00 0x00    Balance trigger voltage
-  temp_param_value = uint32_to_float(&data[26]) * 0.001f; 
+  temp_param_value = uint32_to_float(&data[26]) * 0.001f;
   //ESP_LOGV(TAG, "  Balance trigger voltage: %f V", temp_param_value); ///(float) jk_get_32bit(26) * 0.001f);
   this->publish_state_(this->cell_balancing_trigger_voltage_number_, temp_param_value); ///(float) jk_get_32bit(26) * 0.001f);
 
   // 30 [24]   4   0x00 0x00 0x00 0x00    ** [JK-PB2A16S-20P v14] SOC-100% VOLTAGE
-  temp_param_value = uint32_to_float(&data[30]) * 0.001f; 
+  temp_param_value = uint32_to_float(&data[30]) * 0.001f;
   //ESP_LOGV(TAG, "  SOC-100 VOLTAGE: %f V", temp_param_value); ///(float) jk_get_32bit(30) * 0.001f);
   this->publish_state_(this->cell_soc100_voltage_number_, temp_param_value); ///(float) jk_get_32bit(30) * 0.001f);
-  
+
   // 34 [28]   4   0x00 0x00 0x00 0x00    ** [JK-PB2A16S-20P v14] SOC-0% VOLTAGE
-  temp_param_value = uint32_to_float(&data[34]) * 0.001f; 
+  temp_param_value = uint32_to_float(&data[34]) * 0.001f;
   //ESP_LOGV(TAG, "  SOC-0 VOLTAGE: %f V", temp_param_value); ///(float) jk_get_32bit(34) * 0.001f);
   this->publish_state_(this->cell_soc0_voltage_number_, temp_param_value); ///(float) jk_get_32bit(34) * 0.001f);
-  
+
   // 38 [32]   4   0x00 0x00 0x00 0x00    ** [JK-PB2A16S-20P v14] VOLTAGE CELL REQUEST CHARGE VOLTAGE [RCV]
-  temp_param_value = uint32_to_float(&data[38]) * 0.001f; 
+  temp_param_value = uint32_to_float(&data[38]) * 0.001f;
   //ESP_LOGV(TAG, "  CELL REQUEST CHARGE VOLTAGE [RCV]: %f V", temp_param_value); ///(float) jk_get_32bit(38) * 0.001f);
   this->publish_state_(this->cell_request_charge_voltage_number_, temp_param_value); ///(float) jk_get_32bit(38) * 0.001f);
-  
+
   // 42 [36]   4   0x00 0x00 0x00 0x00    ** [JK-PB2A16S-20P v14] VOLTAGE CELL REQUEST FLOAT VOLTAGE
-  temp_param_value = uint32_to_float(&data[42]) * 0.001f; 
+  temp_param_value = uint32_to_float(&data[42]) * 0.001f;
   //ESP_LOGV(TAG, "  CELL REQUEST FLOAT VOLTAGE [RFV]: %f V", temp_param_value); ///(float) jk_get_32bit(42) * 0.001f);
   this->publish_state_(this->cell_request_float_voltage_number_, temp_param_value); ///(float) jk_get_32bit(42) * 0.001f);
-  
+
   // 46 [40]   4   0xF0 0x0A 0x00 0x00    Power off voltage
-  temp_param_value = uint32_to_float(&data[46]) * 0.001f;   
+  temp_param_value = uint32_to_float(&data[46]) * 0.001f;
   //ESP_LOGV(TAG, "  Sys Power off voltage: %f V", temp_param_value); ///(float) jk_get_32bit(46) * 0.001f);
   this->publish_state_(this->cell_power_off_voltage_number_, temp_param_value); ///(float) jk_get_32bit(46) * 0.001f);
 
   // 50 [44]   4   0xA8 0x61 0x00 0x00    Max. charge current                 CurBatCOC
-  temp_param_value = uint32_to_float(&data[50]) * 0.001f;     
+  temp_param_value = uint32_to_float(&data[50]) * 0.001f;
   //ESP_LOGV(TAG, "  Max. charging current: %f A", temp_param_value); ///(float) jk_get_32bit(50) * 0.001f);
   this->publish_state_(this->max_charging_current_number_, temp_param_value); ///(float) jk_get_32bit(50) * 0.001f);
 
@@ -1186,43 +1187,43 @@ void JkRS485Bms::decode_jk02_settings_(const std::vector<uint8_t> &data) {
   // 0x0030 48  UINT32 4 RW充电过流保护延迟TIMBatCOCPDly    S
   // 02.10.10.     30.00.      02.04.            00.00.00.03.        72.3E      <=====
   // Protection Delay (s)
-  temp_param_value = uint32_to_float(&data[54]);  
+  temp_param_value = uint32_to_float(&data[54]);
   //ESP_LOGV(TAG, "  Charge OCP delay: %f s", temp_param_value); ///(float) jk_get_32bit(54));
   this->publish_state_(this->charging_overcurrent_protection_delay_number_, temp_param_value); ///(float) jk_get_32bit(54));
-  
+
   // 58 [52]   4   0x3C 0x00 0x00 0x00    Charge OCP recovery time            TIMBatCOCPRDly  Charging Overcurrent
   // Protection Release Delay (s)
-  temp_param_value = uint32_to_float(&data[58]);    
+  temp_param_value = uint32_to_float(&data[58]);
   //ESP_LOGV(TAG, "  Charge OCP recovery delay: %f s", temp_param_value); ///(float) jk_get_32bit(58));
   this->publish_state_(this->charging_overcurrent_protection_recovery_delay_number_,  temp_param_value); ///(float) jk_get_32bit(58));
-  
+
   // 62 [56]   4   0xF0 0x49 0x02 0x00    Max. discharge current CurBatDcOC
   // 0x0038 56 UINT32 4 RW持续放电电流CurBatDcOC    mA
   // 02.10.10.    38.00.      02.04.             00.00.04.4C.         30.AC.          (044C=1100)
 
 
-  temp_param_value = uint32_to_float(&data[62]) * 0.001f;   
+  temp_param_value = uint32_to_float(&data[62]) * 0.001f;
   //ESP_LOGV(TAG, "  Max. discharging current: %f A", temp_param_value); ///(float) jk_get_32bit(62) * 0.001f);
   this->publish_state_(this->max_discharging_current_number_, temp_param_value); ///(float) jk_get_32bit(62) * 0.001f);
 
   // 66 [60]   4   0x2C 0x01 0x00 0x00    Discharge OCP delay                 TIMBatDcOCPDly   Discharge Overcurrent Protection Delay
-  temp_param_value = uint32_to_float(&data[66]);  
+  temp_param_value = uint32_to_float(&data[66]);
   //ESP_LOGV(TAG, "  Discharge OCP delay: %f s", temp_param_value); ///(float) jk_get_32bit(66));
   this->publish_state_(this->discharging_overcurrent_protection_delay_number_, temp_param_value); ///(float) jk_get_32bit(66) * 0.001f);
-  
+
   // 70 [64]   4   0x3C 0x00 0x00 0x00    Discharge OCP recovery time         TIMBatDcOCPRDly  Discharge Overcurrent
   // Protection Release Delay
-  temp_param_value = uint32_to_float(&data[70]);    
+  temp_param_value = uint32_to_float(&data[70]);
   //ESP_LOGV(TAG, "  Discharge OCP recovery time: %f s", temp_param_value); ///(float) jk_get_32bit(70));
   this->publish_state_(this->discharging_overcurrent_protection_recovery_delay_number_, temp_param_value); ///(float) jk_get_32bit(70) * 0.001f);
-  
+
   // 74 [68]   4   0x3C 0x00 0x00 0x00    SCPR delay                          TIMBatSCPRDly    Short Circuit Protection Recovery Delay
-  temp_param_value = uint32_to_float(&data[74]);    
+  temp_param_value = uint32_to_float(&data[74]);
   //ESP_LOGV(TAG, "  SCP recovery time: %f s", temp_param_value); ///(float) jk_get_32bit(74));
   this->publish_state_(this->short_circuit_protection_recovery_delay_number_, temp_param_value); ///(float) jk_get_32bit(74) * 0.001f);
 
   // 78 [72]   4   0xD0 0x07 0x00 0x00    Max balance current
-  temp_param_value = uint32_to_float(&data[78]) * 0.001f;   
+  temp_param_value = uint32_to_float(&data[78]) * 0.001f;
   //ESP_LOGV(TAG, "  Max. balance current: %f A", temp_param_value); ///(float) jk_get_32bit(78) * 0.001f);
   this->publish_state_(this->max_balancing_current_number_, temp_param_value); ///(float) jk_get_32bit(78) * 0.001f);
 
@@ -1230,7 +1231,7 @@ void JkRS485Bms::decode_jk02_settings_(const std::vector<uint8_t> &data) {
   temp_param_value=int32_to_float(&data[82])*0.1f;
   //ESP_LOGV(TAG, "  Charging OTP: %f °C", temp_param_value);
   this->publish_state_(this->charging_overtemperature_protection_number_, temp_param_value);
-  
+
   // 86 [80]   4   0x58 0x02 0x00 0x00    Charge OTP Recovery                 TMPBatCOTPR      Charging Over Temperature Protection Recovery
   temp_param_value=int32_to_float(&data[86])*0.1f;
   //ESP_LOGV(TAG, "  Charge OTP recovery: %f °C", temp_param_value);
@@ -1267,7 +1268,7 @@ void JkRS485Bms::decode_jk02_settings_(const std::vector<uint8_t> &data) {
   this->publish_state_(this->mos_overtemperature_protection_recovery_number_, temp_param_value);
 
   // 114 [108]  4   0x0D 0x00 0x00 0x00    cell count settings
-  temp_param_value=uint32_to_float(&data[114]);  
+  temp_param_value=uint32_to_float(&data[114]);
   //ESP_LOGI(TAG, "  cell count settings: %f", temp_param_value); ///(float) jk_get_32bit(114));
   this->publish_state_(this->cell_count_settings_number_, temp_param_value); ///(float) data[114]);
 
@@ -1294,12 +1295,12 @@ void JkRS485Bms::decode_jk02_settings_(const std::vector<uint8_t> &data) {
 
   // 134 [128] 4   0xDC 0x05 0x00 0x00    SCP DELAY (us)
   // ESP_LOGI(TAG, "  SCP DELAY: %f us", (float) jk_get_32bit(134) * 0.001f);
-  temp_param_value=uint32_to_float(&data[134])*0.001f;   
+  temp_param_value=uint32_to_float(&data[134])*0.001f;
   this->publish_state_(this->short_circuit_protection_delay_number_, temp_param_value); ///(float) jk_get_32bit(134) * 0.001f);
 
   // 138 [132]  4   0xE4 0x0C 0x00 0x00    Start balance voltage
   // ESP_LOGI(TAG, "  Start balance voltage: %f V", (float) jk_get_32bit(138) * 0.001f);
-  temp_param_value=uint32_to_float(&data[138])*0.001f;     
+  temp_param_value=uint32_to_float(&data[138])*0.001f;
   this->publish_state_(this->cell_balancing_starting_voltage_number_, temp_param_value); ///(float) jk_get_32bit(138) * 0.001f);
 
   // 142   4   0x00 0x00 0x00 0x00
@@ -1349,12 +1350,12 @@ void JkRS485Bms::decode_jk02_settings_(const std::vector<uint8_t> &data) {
   // 270 [264]   4   0x00 0x00 0x00 0x00 (USED BY SNIFFER)
   // ESP_LOGI(TAG, "  Device address: 0x%02X", data[270]);
   // ESP_LOGI(TAG, "         270: %02X%02X%02X%02X",data[270],data[271],data[272],data[273]);
-  
+
   // 274 [268]  4   0x00 0x00 0x00 0x00    TIMProdischarge: Discharge pre-charging time
   // ESP_LOGI(TAG, "         274: %02X%02X%02X%02X",data[274],data[275],data[276],data[277]);
-  temp_param_value=uint32_to_float(&data[274]);   
+  temp_param_value=uint32_to_float(&data[274]);
   ESP_LOGI(TAG, "  Precharging time from discharged: %f s", temp_param_value); ///(float) ((int32_t) jk_get_32bit(274)));
-  this->publish_state_(this->precharging_time_from_discharge_number_, temp_param_value); ///(float) ((int32_t) jk_get_32bit(274)));  
+  this->publish_state_(this->precharging_time_from_discharge_number_, temp_param_value); ///(float) ((int32_t) jk_get_32bit(274)));
 
   // 278   4   0x00 0x00 0x00 0x00  //60 e3 16 00          10023c3218feffffffbfe90102000000000001
   ///ESP_LOGI(TAG, "      unkown 278: %02X%02X%02X%02X",data[278],data[279],data[280],data[281]);
@@ -1369,43 +1370,43 @@ void JkRS485Bms::decode_jk02_settings_(const std::vector<uint8_t> &data) {
   //    bit5: Special Charger                        32
   //    bit6: SMART_SLEEP_ON_SWITCH_ENABLED          64
   //    bit7: disable_pcl_module_switch_ENABLED      128
-  //ESP_LOGI(TAG, "  Before binary 0 -------------------------------------------------------------------------------------------"); 
+  //ESP_LOGI(TAG, "  Before binary 0 -------------------------------------------------------------------------------------------");
   bool value_tmp;
 
-  value_tmp=this->check_bit_of_byte_(data[282], 0); 
-  ESP_LOGV(TAG, "[0x%02X]* heating_switch_                      is bit 0 of 0x%02X is %02X address %p",this->address_,data[282],value_tmp,(void *) this->heating_switch_);    
+  value_tmp=this->check_bit_of_byte_(data[282], 0);
+  ESP_LOGV(TAG, "[0x%02X]* heating_switch_                      is bit 0 of 0x%02X is %02X address %p",this->address_,data[282],value_tmp,(void *) this->heating_switch_);
   this->publish_state_(this->heating_switch_, value_tmp);
   // ESP_LOGI(TAG, "  heating switch: %s", ( this->check_bit_(data[282], 1)) ? "on" : "off");
-  value_tmp=this->check_bit_of_byte_(data[282], 1); 
-  ESP_LOGV(TAG, "[0x%02X]* disable_temperature_sensors_switch_  is bit 1 of 0x%02X is %02X address %p",this->address_,data[282],value_tmp,(void *) this->disable_temperature_sensors_switch_); 
+  value_tmp=this->check_bit_of_byte_(data[282], 1);
+  ESP_LOGV(TAG, "[0x%02X]* disable_temperature_sensors_switch_  is bit 1 of 0x%02X is %02X address %p",this->address_,data[282],value_tmp,(void *) this->disable_temperature_sensors_switch_);
   this->publish_state_(this->disable_temperature_sensors_switch_, value_tmp);
-  value_tmp=this->check_bit_of_byte_(data[282], 2); 
-  ESP_LOGV(TAG, "[0x%02X]* gps_heartbeat_switch_                is bit 2 of 0x%02X is %02X address %p",this->address_,data[282],value_tmp,(void *) this->gps_heartbeat_switch_);    
-  this->publish_state_(this->gps_heartbeat_switch_, value_tmp); 
-  value_tmp=this->check_bit_of_byte_(data[282], 3); 
-  ESP_LOGV(TAG, "[0x%02X]* port_selection_switch_               is bit 3 of 0x%02X is %02X address %p",this->address_,data[282],value_tmp,(void *) this->port_selection_switch_); 
+  value_tmp=this->check_bit_of_byte_(data[282], 2);
+  ESP_LOGV(TAG, "[0x%02X]* gps_heartbeat_switch_                is bit 2 of 0x%02X is %02X address %p",this->address_,data[282],value_tmp,(void *) this->gps_heartbeat_switch_);
+  this->publish_state_(this->gps_heartbeat_switch_, value_tmp);
+  value_tmp=this->check_bit_of_byte_(data[282], 3);
+  ESP_LOGV(TAG, "[0x%02X]* port_selection_switch_               is bit 3 of 0x%02X is %02X address %p",this->address_,data[282],value_tmp,(void *) this->port_selection_switch_);
   this->publish_state_(this->port_selection_switch_, value_tmp);
   // ESP_LOGI(TAG, "  Port switch: %s", this->check_bit_(data[282], 8) ? "RS485" : "CAN");
-  value_tmp=this->check_bit_of_byte_(data[282], 4); 
-  ESP_LOGV(TAG, "[0x%02X]* display_always_on_switch_            is bit 4 of 0x%02X is %02X address %p",this->address_,data[282],value_tmp,(void *) this->display_always_on_switch_); 
+  value_tmp=this->check_bit_of_byte_(data[282], 4);
+  ESP_LOGV(TAG, "[0x%02X]* display_always_on_switch_            is bit 4 of 0x%02X is %02X address %p",this->address_,data[282],value_tmp,(void *) this->display_always_on_switch_);
   this->publish_state_(this->display_always_on_switch_, value_tmp);
-  value_tmp=this->check_bit_of_byte_(data[282], 5); 
-  ESP_LOGV(TAG, "[0x%02X]* special_charger_switch_              is bit 5 of 0x%02X is %02X address %p",this->address_,data[282],value_tmp,(void *) this->special_charger_switch_); 
+  value_tmp=this->check_bit_of_byte_(data[282], 5);
+  ESP_LOGV(TAG, "[0x%02X]* special_charger_switch_              is bit 5 of 0x%02X is %02X address %p",this->address_,data[282],value_tmp,(void *) this->special_charger_switch_);
   this->publish_state_(this->special_charger_switch_, value_tmp);
-  value_tmp=this->check_bit_of_byte_(data[282], 6); 
-  ESP_LOGV(TAG, "[0x%02X]* smart_sleep_on_switch_               is bit 6 of 0x%02X is %02X address %p",this->address_,data[282],value_tmp,(void *) this->smart_sleep_on_switch_); 
+  value_tmp=this->check_bit_of_byte_(data[282], 6);
+  ESP_LOGV(TAG, "[0x%02X]* smart_sleep_on_switch_               is bit 6 of 0x%02X is %02X address %p",this->address_,data[282],value_tmp,(void *) this->smart_sleep_on_switch_);
   this->publish_state_(this->smart_sleep_on_switch_, value_tmp);
-  value_tmp=this->check_bit_of_byte_(data[282], 7); 
-  ESP_LOGV(TAG, "[0x%02X]* disable_pcl_module_switch_           is bit 7 of 0x%02X is %02X address %p",this->address_,data[282],value_tmp,(void *) this->disable_pcl_module_switch_);   
+  value_tmp=this->check_bit_of_byte_(data[282], 7);
+  ESP_LOGV(TAG, "[0x%02X]* disable_pcl_module_switch_           is bit 7 of 0x%02X is %02X address %p",this->address_,data[282],value_tmp,(void *) this->disable_pcl_module_switch_);
   this->publish_state_(this->disable_pcl_module_switch_, value_tmp);
-  
+
 
 //  // Loggear memoria libre
 //  ESP_LOGD(TAG, "Free Heap: %u bytes", heap_caps_get_free_size(MALLOC_CAP_8BIT));
 //  // Loggear tiempo de actividad
 //  ESP_LOGD(TAG, "Uptime: %u seconds", millis() / 1000);
 
-//  ESP_LOGI(TAG, "  After binary 7 -------------------------------------------------------------------------------------"); 
+//  ESP_LOGI(TAG, "  After binary 7 -------------------------------------------------------------------------------------");
 
   // 283 [28?]   1   0x00                   New controls bitmask
   // ** [JK-PB2A16S-20P v14]
@@ -1417,12 +1418,12 @@ void JkRS485Bms::decode_jk02_settings_(const std::vector<uint8_t> &data) {
   //    bit5: ?                                      32
   //    bit6: ?                                      64
   //    bit7: ?                                      128
-  value_tmp=this->check_bit_of_byte_(data[283], 0); 
-  ESP_LOGV(TAG, "[0x%02X]* timed_stored_data_switch_            is bit 8 of 0x%02X is %02X address %p",this->address_,data[283],value_tmp,(void *) this->timed_stored_data_switch_);     
+  value_tmp=this->check_bit_of_byte_(data[283], 0);
+  ESP_LOGV(TAG, "[0x%02X]* timed_stored_data_switch_            is bit 8 of 0x%02X is %02X address %p",this->address_,data[283],value_tmp,(void *) this->timed_stored_data_switch_);
   this->publish_state_(this->timed_stored_data_switch_, value_tmp);
   // ESP_LOGI(TAG, "  timed_stored_data_switch: %s", ( this->check_bit_(data[283], 1)) ? "on" : "off");
-  value_tmp=this->check_bit_of_byte_(data[283], 1); 
-  ESP_LOGV(TAG, "[0x%02X]* charging_float_mode_switch_          is bit 9 of 0x%02X is %02X address %p",this->address_,data[283],value_tmp,(void *) this->charging_float_mode_switch_);     
+  value_tmp=this->check_bit_of_byte_(data[283], 1);
+  ESP_LOGV(TAG, "[0x%02X]* charging_float_mode_switch_          is bit 9 of 0x%02X is %02X address %p",this->address_,data[283],value_tmp,(void *) this->charging_float_mode_switch_);
   this->publish_state_(this->charging_float_mode_switch_, value_tmp);
   // ESP_LOGI(TAG, "  charging_float_mode_switch: %s", ( this->check_bit_(data[283], 2)) ? "on" : "off");
   // ESP_LOGI(TAG, "  switch bit2: %s", ( this->check_bit_(data[283], 2)) ? "on" : "off");
@@ -1437,13 +1438,13 @@ void JkRS485Bms::decode_jk02_settings_(const std::vector<uint8_t> &data) {
   // ESP_LOGI(TAG, "  TIMSmartSleep: %d H", (uint8_t) (data[286]));
   this->publish_state_(this->smart_sleep_time_sensor_, (uint8_t) (data[286]));
 //  ESP_LOGI(TAG, "  Data field enable control 0: %d", (uint8_t) (data[287]));
-  
+
 
   // 290   4   0x00 0x00 0x00 0x00
   // 294   4   0x00 0x00 0x00 0x00
   // 298   1   0x00
   // 299   1   0x40                   CHECKSUM
-  this->trigger_bms2sniffer_event("WORKING ! #####",01);  
+  this->trigger_bms2sniffer_event("WORKING ! #####",01);
 }
 
 void JkRS485Bms::update() { this->track_status_online_(); }
@@ -1517,7 +1518,7 @@ void JkRS485Bms::decode_device_info_(const std::vector<uint8_t> &data) {
   //ESP_LOGV(TAG, "  Setup passcode: %s", std::string(data.begin() + 118, data.begin() + 118 + 16).c_str());
 
   //ESP_LOGV(TAG, "  UART1 Protocol Number:     0x%02X", ((uint8_t) data[178]));
-  //ESP_LOGV(TAG, "  CAN   Protocol Number:     0x%02X", ((uint8_t) data[179]));  
+  //ESP_LOGV(TAG, "  CAN   Protocol Number:     0x%02X", ((uint8_t) data[179]));
   //ESP_LOGV(TAG, "  UART2 Protocol Number:     0x%02X", ((uint8_t) data[212]));
   //ESP_LOGV(TAG, "  UART2 Protocol Enabled[0]: 0x%02X", ((uint8_t) data[213]));
 
@@ -1542,18 +1543,18 @@ void JkRS485Bms::decode_device_info_(const std::vector<uint8_t> &data) {
   this->publish_state_(this->cell_request_charge_voltage_time_number_, (float) data[266]*0.1f);
   this->publish_state_(this->cell_request_float_voltage_time_number_, (float) data[267]*0.1f);
 
-  this->trigger_bms2sniffer_event("WORKING ! #####",03);  
+  this->trigger_bms2sniffer_event("WORKING ! #####",03);
 }
 
 void JkRS485Bms::track_status_online_() {
   if (this->no_response_count_ < MAX_NO_RESPONSE_COUNT) {
     this->no_response_count_++;
     //ESP_LOGD(TAG, "  ######################################################################################## NO RESPONSE [0x%02X] count:%02d ",this->address_,this->no_response_count_);
-  } else {  
+  } else {
       if (this->no_response_count_ == MAX_NO_RESPONSE_COUNT) {
         this->publish_device_unavailable_();
       }
-      this->no_response_count_++;  
+      this->no_response_count_++;
   }
 }
 
@@ -1567,7 +1568,7 @@ void JkRS485Bms::publish_device_unavailable_() {
 
     this->publish_state_(status_online_binary_sensor_, NAN);
     this->publish_state_(status_balancing_binary_sensor_, NAN);
-    this->publish_state_(status_precharging_binary_sensor_, NAN);  
+    this->publish_state_(status_precharging_binary_sensor_, NAN);
     this->publish_state_(status_charging_binary_sensor_, NAN);
     this->publish_state_(status_discharging_binary_sensor_, NAN);
     this->publish_state_(status_heating_binary_sensor_, NAN);
@@ -1601,7 +1602,7 @@ void JkRS485Bms::publish_device_unavailable_() {
     this->publish_state_(alarm_battempsensor2absent_binary_sensor_, NAN);
     this->publish_state_(alarm_battempsensor3absent_binary_sensor_, NAN);
     this->publish_state_(alarm_battempsensor4absent_binary_sensor_, NAN);
-    this->publish_state_(alarm_battempsensor5absent_binary_sensor_, NAN); 
+    this->publish_state_(alarm_battempsensor5absent_binary_sensor_, NAN);
 
   this->publish_state_(cell_smart_sleep_voltage_number_, NAN);
   this->publish_state_(cell_undervoltage_protection_number_, NAN);
@@ -1612,7 +1613,7 @@ void JkRS485Bms::publish_device_unavailable_() {
   this->publish_state_(cell_request_charge_voltage_number_, NAN);
   this->publish_state_(cell_request_float_voltage_number_, NAN);
   this->publish_state_(cell_power_off_voltage_number_, NAN);
-  this->publish_state_(cell_balancing_starting_voltage_number_, NAN);  
+  this->publish_state_(cell_balancing_starting_voltage_number_, NAN);
   this->publish_state_(max_charging_current_number_, NAN);
   this->publish_state_(charging_overcurrent_protection_delay_number_, NAN);
   this->publish_state_(charging_overcurrent_protection_recovery_delay_number_, NAN);
@@ -1635,7 +1636,7 @@ void JkRS485Bms::publish_device_unavailable_() {
   this->publish_state_(precharging_time_from_discharge_number_, NAN);
   this->publish_state_(cell_request_charge_voltage_time_number_, NAN);
   this->publish_state_(cell_request_float_voltage_time_number_, NAN);
-  
+
   this->publish_state_(status_online_binary_sensor_, false);
   this->publish_state_(errors_text_sensor_, "Offline");
   this->publish_state_(cell_count_real_sensor_, NAN);
@@ -1697,7 +1698,7 @@ void JkRS485Bms::publish_device_unavailable_() {
   this->publish_state_(actual_battery_capacity_sensor_, NAN);
   this->publish_state_(protocol_version_sensor_, NAN);
 
-  
+
 
   for (auto &cell : this->cells_) {
     this->publish_state_(cell.cell_voltage_sensor_, NAN);
@@ -1791,7 +1792,7 @@ void JkRS485Bms::publish_state_(JkRS485BmsNumber *number, float value) {
 
 void JkRS485Bms::publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state) {
   if (text_sensor == nullptr){
-    ESP_LOGVV(TAG, "Object is nullptr");  
+    ESP_LOGVV(TAG, "Object is nullptr");
     return;
   }
 
@@ -1800,7 +1801,7 @@ void JkRS485Bms::publish_state_(text_sensor::TextSensor *text_sensor, const std:
 
 void JkRS485Bms::publish_alarm_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state) {
   if (binary_sensor == nullptr) {
-    ESP_LOGVV(TAG, "Object is nullptr");  
+    ESP_LOGVV(TAG, "Object is nullptr");
     return;
   }
   battery_total_alarms_count_++;

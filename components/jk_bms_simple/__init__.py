@@ -16,7 +16,6 @@ from esphome.const import (
     UNIT_WATT,
     UNIT_CELSIUS,
     UNIT_PERCENT,
-    UNIT_AMPERE_HOUR,
     UNIT_SECOND,
     UNIT_EMPTY,
 )
@@ -113,13 +112,13 @@ CONFIG_SCHEMA = (
             
             # Additional important sensors
             cv.Optional("battery_capacity_remaining"): sensor.sensor_schema(
-                unit_of_measurement=UNIT_AMPERE_HOUR,
+                unit_of_measurement="Ah",
                 accuracy_decimals=2,
                 device_class=DEVICE_CLASS_EMPTY,
                 state_class=STATE_CLASS_MEASUREMENT,
             ),
             cv.Optional("battery_capacity_total"): sensor.sensor_schema(
-                unit_of_measurement=UNIT_AMPERE_HOUR,
+                unit_of_measurement="Ah",
                 accuracy_decimals=2,
                 device_class=DEVICE_CLASS_EMPTY,
                 state_class=STATE_CLASS_MEASUREMENT,

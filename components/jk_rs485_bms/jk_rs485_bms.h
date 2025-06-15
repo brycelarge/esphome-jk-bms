@@ -1,7 +1,5 @@
 #pragma once
 
-#include "switch/jk_switch.h"
-#include "number/jk_number.h"
 #include "esphome/components/binary_sensor/binary_sensor.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/text_sensor/text_sensor.h"
@@ -1000,8 +998,6 @@ class JkRS485Bms : public PollingComponent, public jk_rs485_sniffer::JkRS485Snif
 
 
 };
-
-
 
 }  // namespace jk_rs485_bms
 }  // namespace esphome

@@ -32,4 +32,4 @@ async def to_code(config):
         if key in config:
             conf = config[key]
             sens = await text_sensor.new_text_sensor(conf)
-            cg.add(getattr(hub, f"set_{key}_text_sensor")(sens))
+            cg.add(getattr(hub, f"set_{key}_sensor")(sens))

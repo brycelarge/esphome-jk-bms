@@ -359,7 +359,7 @@ void JkBmsSimple::publish_device_status_() {
 
 void JkBmsSimple::dump_config() {
   ESP_LOGCONFIG(TAG, "JK BMS Simple:");
-  ESP_LOGCONFIG(TAG, "  Update interval: %dms", this->get_update_interval());
+  ESP_LOGCONFIG(TAG, "  Update interval: %dms", this->update_interval_);
   
   if (this->total_voltage_sensor_) {
     LOG_SENSOR("  ", "Total Voltage", this->total_voltage_sensor_);

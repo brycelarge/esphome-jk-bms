@@ -10,7 +10,6 @@
 namespace esphome {
 namespace jk_bms_simple {
 
-static const char *const TAG = "jk_bms_simple";
 static const uint8_t MAX_CELLS = 32;
 
 class JkBmsSimple : public Component, public uart::UARTDevice {
@@ -70,20 +69,21 @@ class JkBmsSimple : public Component, public uart::UARTDevice {
   binary_sensor::BinarySensor *get_status_discharging_sensor() { return status_discharging_sensor_; }
 
  protected:
-  void process_frame_(const std::vector<uint8_t> &data);
+  void process_frames_();
+  void process_frame_(uint8_t frame_type, const std::vector<uint8_t> &data);
   void parse_jk_frame_(const std::vector<uint8_t> &data);
   float bytes_to_float_(const uint8_t *bytes, bool is_signed = false);
   uint16_t bytes_to_uint16_(const uint8_t *bytes);
   uint32_t bytes_to_uint32_(const uint8_t *bytes);
   
   void handle_uart_data_(const std::vector<uint8_t> &data);
-  void parse_jk_frame_(const std::vector<uint8_t> &data);
   void decode_settings_(const std::vector<uint8_t> &data);
   void decode_device_info_(const std::vector<uint8_t> &data);
   void calculate_cell_statistics_();
   void publish_sensors_();
   void publish_device_status_();
   void reset_online_status_tracker_();
+  uint32_t get_update_interval() const { return update_interval_; }
 
   // Basic sensors
   sensor::Sensor *total_voltage_sensor_{nullptr};
@@ -152,6 +152,8 @@ class JkBmsSimple : public Component, public uart::UARTDevice {
   uint32_t last_message_time_{0};
   bool device_online_{false};
   std::vector<uint8_t> rx_buffer_;
+  uint32_t update_interval_{0};
+
 };
 
 }  // namespace jk_bms_simple

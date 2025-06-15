@@ -3,6 +3,8 @@ import esphome.config_validation as cv
 from esphome.components import uart, sensor, binary_sensor, text_sensor
 from esphome.const import (
     CONF_ID,
+    CONF_ADDRESS,
+    CONF_UPDATE_INTERVAL,
     DEVICE_CLASS_VOLTAGE,
     DEVICE_CLASS_CURRENT,
     DEVICE_CLASS_POWER,
@@ -39,146 +41,144 @@ JK_BMS_SIMPLE_COMPONENT_SCHEMA = cv.Schema(
 # Cell voltage sensor names
 CELL_VOLTAGE_SENSORS = [f"cell_voltage_{i:02d}" for i in range(1, 33)]
 
-CONFIG_SCHEMA = (
-    cv.Schema(
-        {
-            cv.GenerateID(): cv.declare_id(JkBmsSimple),
-            
-            # Basic sensors
-            cv.Optional("total_voltage"): sensor.sensor_schema(
-                unit_of_measurement=UNIT_VOLT,
-                accuracy_decimals=3,
-                device_class=DEVICE_CLASS_VOLTAGE,
-                state_class=STATE_CLASS_MEASUREMENT,
-            ),
-            cv.Optional("current"): sensor.sensor_schema(
-                unit_of_measurement=UNIT_AMPERE,
-                accuracy_decimals=3,
-                device_class=DEVICE_CLASS_CURRENT,
-                state_class=STATE_CLASS_MEASUREMENT,
-            ),
-            cv.Optional("power"): sensor.sensor_schema(
-                unit_of_measurement=UNIT_WATT,
-                accuracy_decimals=1,
-                device_class=DEVICE_CLASS_POWER,
-                state_class=STATE_CLASS_MEASUREMENT,
-            ),
-            cv.Optional("battery_soc"): sensor.sensor_schema(
-                unit_of_measurement=UNIT_PERCENT,
-                accuracy_decimals=0,
-                device_class=DEVICE_CLASS_BATTERY,
-                state_class=STATE_CLASS_MEASUREMENT,
-            ),
-            cv.Optional("temperature"): sensor.sensor_schema(
-                unit_of_measurement=UNIT_CELSIUS,
-                accuracy_decimals=1,
-                device_class=DEVICE_CLASS_TEMPERATURE,
-                state_class=STATE_CLASS_MEASUREMENT,
-            ),
-            
-            # Cell statistics sensors
-            cv.Optional("cell_voltage_min"): sensor.sensor_schema(
-                unit_of_measurement=UNIT_VOLT,
-                accuracy_decimals=3,
-                device_class=DEVICE_CLASS_VOLTAGE,
-                state_class=STATE_CLASS_MEASUREMENT,
-            ),
-            cv.Optional("cell_voltage_max"): sensor.sensor_schema(
-                unit_of_measurement=UNIT_VOLT,
-                accuracy_decimals=3,
-                device_class=DEVICE_CLASS_VOLTAGE,
-                state_class=STATE_CLASS_MEASUREMENT,
-            ),
-            cv.Optional("cell_voltage_average"): sensor.sensor_schema(
-                unit_of_measurement=UNIT_VOLT,
-                accuracy_decimals=3,
-                device_class=DEVICE_CLASS_VOLTAGE,
-                state_class=STATE_CLASS_MEASUREMENT,
-            ),
-            cv.Optional("cell_voltage_delta"): sensor.sensor_schema(
-                unit_of_measurement=UNIT_VOLT,
-                accuracy_decimals=3,
-                device_class=DEVICE_CLASS_VOLTAGE,
-                state_class=STATE_CLASS_MEASUREMENT,
-            ),
-            cv.Optional("cell_voltage_min_cell_number"): sensor.sensor_schema(
-                unit_of_measurement=UNIT_EMPTY,
-                accuracy_decimals=0,
-                device_class=DEVICE_CLASS_EMPTY,
-                state_class=STATE_CLASS_MEASUREMENT,
-            ),
-            cv.Optional("cell_voltage_max_cell_number"): sensor.sensor_schema(
-                unit_of_measurement=UNIT_EMPTY,
-                accuracy_decimals=0,
-                device_class=DEVICE_CLASS_EMPTY,
-                state_class=STATE_CLASS_MEASUREMENT,
-            ),
-            cv.Optional("cell_count_real"): sensor.sensor_schema(
-                unit_of_measurement=UNIT_EMPTY,
-                accuracy_decimals=0,
-                device_class=DEVICE_CLASS_EMPTY,
-                state_class=STATE_CLASS_MEASUREMENT,
-            ),
-            
-            # Additional important sensors
-            cv.Optional("battery_capacity_remaining"): sensor.sensor_schema(
-                unit_of_measurement="Ah",
-                accuracy_decimals=2,
-                device_class=DEVICE_CLASS_EMPTY,
-                state_class=STATE_CLASS_MEASUREMENT,
-            ),
-            cv.Optional("battery_capacity_total"): sensor.sensor_schema(
-                unit_of_measurement="Ah",
-                accuracy_decimals=2,
-                device_class=DEVICE_CLASS_EMPTY,
-                state_class=STATE_CLASS_MEASUREMENT,
-            ),
-            cv.Optional("charging_cycles"): sensor.sensor_schema(
-                unit_of_measurement=UNIT_EMPTY,
-                accuracy_decimals=0,
-                device_class=DEVICE_CLASS_EMPTY,
-                state_class=STATE_CLASS_TOTAL_INCREASING,
-            ),
-            cv.Optional("total_runtime"): sensor.sensor_schema(
-                unit_of_measurement=UNIT_SECOND,
-                accuracy_decimals=0,
-                device_class=DEVICE_CLASS_EMPTY,
-                state_class=STATE_CLASS_TOTAL_INCREASING,
-            ),
-            
-            # Temperature sensors
-            cv.Optional("temperature_sensor_1"): sensor.sensor_schema(
-                unit_of_measurement=UNIT_CELSIUS,
-                accuracy_decimals=1,
-                device_class=DEVICE_CLASS_TEMPERATURE,
-                state_class=STATE_CLASS_MEASUREMENT,
-            ),
-            cv.Optional("temperature_sensor_2"): sensor.sensor_schema(
-                unit_of_measurement=UNIT_CELSIUS,
-                accuracy_decimals=1,
-                device_class=DEVICE_CLASS_TEMPERATURE,
-                state_class=STATE_CLASS_MEASUREMENT,
-            ),
-            cv.Optional("temperature_powertube"): sensor.sensor_schema(
-                unit_of_measurement=UNIT_CELSIUS,
-                accuracy_decimals=1,
-                device_class=DEVICE_CLASS_TEMPERATURE,
-                state_class=STATE_CLASS_MEASUREMENT,
-            ),
-            
-            # Binary sensors
-            cv.Optional("status_online"): binary_sensor.binary_sensor_schema(),
-            cv.Optional("status_charging"): binary_sensor.binary_sensor_schema(),
-            cv.Optional("status_discharging"): binary_sensor.binary_sensor_schema(),
-            cv.Optional("status_balancing"): binary_sensor.binary_sensor_schema(),
-            
-            # Text sensors
-            cv.Optional("device_info"): text_sensor.text_sensor_schema(),
-        }
-    )
-    .extend(cv.COMPONENT_SCHEMA)
-    .extend(uart.UART_DEVICE_SCHEMA)
-)
+CONFIG_SCHEMA = cv.Schema(
+    {
+        cv.GenerateID(): cv.declare_id(JkBmsSimple),
+        cv.Optional(CONF_ADDRESS, default=0): cv.int_range(min=0, max=255),
+        cv.Optional(CONF_UPDATE_INTERVAL, default="5s"): cv.positive_time_period_milliseconds,
+        
+        # Basic sensors
+        cv.Optional("total_voltage"): sensor.sensor_schema(
+            unit_of_measurement=UNIT_VOLT,
+            accuracy_decimals=3,
+            device_class=DEVICE_CLASS_VOLTAGE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional("current"): sensor.sensor_schema(
+            unit_of_measurement=UNIT_AMPERE,
+            accuracy_decimals=3,
+            device_class=DEVICE_CLASS_CURRENT,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional("power"): sensor.sensor_schema(
+            unit_of_measurement=UNIT_WATT,
+            accuracy_decimals=1,
+            device_class=DEVICE_CLASS_POWER,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional("battery_soc"): sensor.sensor_schema(
+            unit_of_measurement=UNIT_PERCENT,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_BATTERY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional("temperature"): sensor.sensor_schema(
+            unit_of_measurement=UNIT_CELSIUS,
+            accuracy_decimals=1,
+            device_class=DEVICE_CLASS_TEMPERATURE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        
+        # Cell statistics sensors
+        cv.Optional("cell_voltage_min"): sensor.sensor_schema(
+            unit_of_measurement=UNIT_VOLT,
+            accuracy_decimals=3,
+            device_class=DEVICE_CLASS_VOLTAGE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional("cell_voltage_max"): sensor.sensor_schema(
+            unit_of_measurement=UNIT_VOLT,
+            accuracy_decimals=3,
+            device_class=DEVICE_CLASS_VOLTAGE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional("cell_voltage_average"): sensor.sensor_schema(
+            unit_of_measurement=UNIT_VOLT,
+            accuracy_decimals=3,
+            device_class=DEVICE_CLASS_VOLTAGE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional("cell_voltage_delta"): sensor.sensor_schema(
+            unit_of_measurement=UNIT_VOLT,
+            accuracy_decimals=3,
+            device_class=DEVICE_CLASS_VOLTAGE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional("cell_voltage_min_cell_number"): sensor.sensor_schema(
+            unit_of_measurement=UNIT_EMPTY,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional("cell_voltage_max_cell_number"): sensor.sensor_schema(
+            unit_of_measurement=UNIT_EMPTY,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional("cell_count_real"): sensor.sensor_schema(
+            unit_of_measurement=UNIT_EMPTY,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        
+        # Additional important sensors
+        cv.Optional("battery_capacity_remaining"): sensor.sensor_schema(
+            unit_of_measurement="Ah",
+            accuracy_decimals=2,
+            device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional("battery_capacity_total"): sensor.sensor_schema(
+            unit_of_measurement="Ah",
+            accuracy_decimals=2,
+            device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional("charging_cycles"): sensor.sensor_schema(
+            unit_of_measurement=UNIT_EMPTY,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_TOTAL_INCREASING,
+        ),
+        cv.Optional("total_runtime"): sensor.sensor_schema(
+            unit_of_measurement=UNIT_SECOND,
+            accuracy_decimals=0,
+            device_class=DEVICE_CLASS_EMPTY,
+            state_class=STATE_CLASS_TOTAL_INCREASING,
+        ),
+        
+        # Temperature sensors
+        cv.Optional("temperature_sensor_1"): sensor.sensor_schema(
+            unit_of_measurement=UNIT_CELSIUS,
+            accuracy_decimals=1,
+            device_class=DEVICE_CLASS_TEMPERATURE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional("temperature_sensor_2"): sensor.sensor_schema(
+            unit_of_measurement=UNIT_CELSIUS,
+            accuracy_decimals=1,
+            device_class=DEVICE_CLASS_TEMPERATURE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional("temperature_powertube"): sensor.sensor_schema(
+            unit_of_measurement=UNIT_CELSIUS,
+            accuracy_decimals=1,
+            device_class=DEVICE_CLASS_TEMPERATURE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        
+        # Binary sensors
+        cv.Optional("status_online"): binary_sensor.binary_sensor_schema(),
+        cv.Optional("status_charging"): binary_sensor.binary_sensor_schema(),
+        cv.Optional("status_discharging"): binary_sensor.binary_sensor_schema(),
+        cv.Optional("status_balancing"): binary_sensor.binary_sensor_schema(),
+        
+        # Text sensors
+        cv.Optional("device_info"): text_sensor.text_sensor_schema(),
+    }
+).extend(cv.COMPONENT_SCHEMA).extend(uart.UART_DEVICE_SCHEMA)
 
 # Add cell voltage sensors to schema
 for i, cell_name in enumerate(CELL_VOLTAGE_SENSORS):
@@ -190,7 +190,6 @@ for i, cell_name in enumerate(CELL_VOLTAGE_SENSORS):
             state_class=STATE_CLASS_MEASUREMENT,
         )
     })
-
 
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
@@ -304,3 +303,9 @@ async def to_code(config):
     if "device_info" in config:
         sens = await text_sensor.new_text_sensor(config["device_info"])
         cg.add(var.set_device_info_sensor(sens))
+    
+    if CONF_ADDRESS in config:
+        cg.add(var.set_address(config[CONF_ADDRESS]))
+    
+    if CONF_UPDATE_INTERVAL in config:
+        cg.add(var.set_update_interval(config[CONF_UPDATE_INTERVAL]))

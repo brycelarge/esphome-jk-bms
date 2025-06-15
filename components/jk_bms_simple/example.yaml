@@ -1,0 +1,64 @@
+esphome:
+  name: jk-bms-simple-test
+  platform: ESP32
+  board: esp32dev
+
+wifi:
+  ssid: "YourWiFiSSID"
+  password: "YourWiFiPassword"
+
+logger:
+  level: DEBUG
+
+api:
+ota:
+
+uart:
+  id: uart_bus
+  tx_pin: GPIO17
+  rx_pin: GPIO16
+  baud_rate: 115200
+
+jk_bms_simple:
+  uart_id: uart_bus
+  address: 1  # BMS address (1-255, or 0 for any)
+  
+  # Core sensors
+  total_voltage:
+    name: "Battery Voltage"
+    unit_of_measurement: "V"
+    accuracy_decimals: 3
+    
+  current:
+    name: "Battery Current"
+    unit_of_measurement: "A"
+    accuracy_decimals: 3
+    
+  power:
+    name: "Battery Power"
+    unit_of_measurement: "W"
+    accuracy_decimals: 1
+    
+  battery_soc:
+    name: "Battery SOC"
+    unit_of_measurement: "%"
+    accuracy_decimals: 0
+    
+  temperature:
+    name: "BMS Temperature"
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+    
+  # Status sensors
+  status_online:
+    name: "BMS Online"
+    
+  status_charging:
+    name: "Battery Charging"
+    
+  status_discharging:
+    name: "Battery Discharging"
+    
+  # Device info
+  device_info:
+    name: "BMS Device Info"

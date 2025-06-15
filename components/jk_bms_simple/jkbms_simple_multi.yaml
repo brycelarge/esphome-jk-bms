@@ -1,0 +1,1007 @@
+substitutions:
+  esp_name: jkbms-simple
+  name: "jkbms-simple"
+  bms0: "bms0"
+  bms1: "bms1"
+  bms2: "bms2"
+  bms0_name: "master"
+  bms1_name: "slave_1"
+  bms2_name: "slave_2"
+  device_description: "Monitor multiple JK-BMS via RS485 - Simplified Version"
+  external_components_source: github://brycelarge/esphome-jk-bms@main
+  tx_pin_uart_0: GPIO17
+  rx_pin_uart_0: GPIO16
+
+esphome:
+  name: ${esp_name}
+  comment: ${device_description}
+  project:
+    name: "txubelaxu.esphome-jk-bms-simple"
+    version: 1.0.0
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+external_components:
+  - source: ${external_components_source}
+    refresh: 0s
+    components: 
+      - jk_bms_simple
+
+# Enable logging
+logger:
+  level: DEBUG
+  tx_buffer_size: 2048
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "kq9IdD2gYJURpdgkZj6zi19Uq4voHQqCrUfyJ3yQjfE="
+
+ota:
+  - platform: esphome
+    password: "a558aeacbdbfaa4a4972d111999c32d1"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Jkbms-Simple Fallback Hotspot"
+    password: "72WM119qocuo"
+
+uart:
+  - id: uart_0
+    baud_rate: 115200
+    rx_buffer_size: 500
+    tx_pin: ${tx_pin_uart_0}
+    rx_pin: ${rx_pin_uart_0}
+
+# BMS Simple Components - One per BMS address
+jk_bms_simple:
+  - id: ${bms0}
+    uart_id: uart_0
+    address: 0x00  # Master BMS
+    update_interval: 5s
+    
+  - id: ${bms1}
+    uart_id: uart_0
+    address: 0x01  # Slave 1 BMS
+    update_interval: 5s
+    
+  - id: ${bms2}
+    uart_id: uart_0
+    address: 0x02  # Slave 2 BMS
+    update_interval: 5s
+
+# Core sensors for each BMS
+sensor:
+  - platform: uptime
+    id: uptime_sec
+  - platform: uptime
+    name: ${esp_name} Uptime Sensor
+    id: uptime_sensor
+    update_interval: 1800s
+    entity_category: diagnostic
+    on_raw_value:
+      then:
+        - text_sensor.template.publish:
+            id: uptime_human
+            state: !lambda |-
+              char buf[10];
+              int uptime_sec = round(id(uptime_sensor).raw_state);
+              int days = (int)(uptime_sec / 86400);
+              int hours = (int)((uptime_sec % 86400) / 3600);
+              int minutes = (int)((uptime_sec % 3600) / 60);
+              int seconds = (int)(uptime_sec % 60);
+
+              return(
+                (
+                  (days ? sprintf(buf, "%02dd ", days), std::string(buf) : "") +
+                  (hours ? sprintf(buf, "%02dh ", hours), std::string(buf) : "") +
+                  (minutes ? sprintf(buf, "%02dm ", minutes), std::string(buf) : "") +
+                  (sprintf(buf, "%02ds", seconds), std::string(buf))
+                ).c_str()
+              );
+
+  # Master BMS (Address 0x00) Sensors
+  - platform: jk_bms_simple
+    jk_bms_simple_id: ${bms0}
+    total_voltage:
+      name: "${bms0_name} battery voltage"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+      
+    current:
+      name: "${bms0_name} battery current"
+      unit_of_measurement: "A"
+      accuracy_decimals: 3
+      device_class: current
+      state_class: measurement
+      
+    power:
+      name: "${bms0_name} battery power"
+      unit_of_measurement: "W"
+      accuracy_decimals: 1
+      device_class: power
+      state_class: measurement
+      
+    battery_soc:
+      name: "${bms0_name} battery capacity state of charge"
+      unit_of_measurement: "%"
+      accuracy_decimals: 0
+      device_class: battery
+      state_class: measurement
+      
+    temperature:
+      name: "${bms0_name} temperature sensor 1"
+      unit_of_measurement: "°C"
+      accuracy_decimals: 1
+      device_class: temperature
+      state_class: measurement
+
+    # Cell voltage sensors (16 cells)
+    cell_voltage_01:
+      name: "${bms0_name} cell voltage 01"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_02:
+      name: "${bms0_name} cell voltage 02"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_03:
+      name: "${bms0_name} cell voltage 03"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_04:
+      name: "${bms0_name} cell voltage 04"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_05:
+      name: "${bms0_name} cell voltage 05"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_06:
+      name: "${bms0_name} cell voltage 06"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_07:
+      name: "${bms0_name} cell voltage 07"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_08:
+      name: "${bms0_name} cell voltage 08"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_09:
+      name: "${bms0_name} cell voltage 09"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_10:
+      name: "${bms0_name} cell voltage 10"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_11:
+      name: "${bms0_name} cell voltage 11"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_12:
+      name: "${bms0_name} cell voltage 12"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_13:
+      name: "${bms0_name} cell voltage 13"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_14:
+      name: "${bms0_name} cell voltage 14"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_15:
+      name: "${bms0_name} cell voltage 15"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_16:
+      name: "${bms0_name} cell voltage 16"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+
+    # Cell statistics
+    cell_voltage_min:
+      name: "${bms0_name} cell voltage min"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_max:
+      name: "${bms0_name} cell voltage max"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_average:
+      name: "${bms0_name} cell voltage average"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_delta:
+      name: "${bms0_name} cell voltage delta"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_min_cell_number:
+      name: "${bms0_name} cell voltage min cell number"
+      accuracy_decimals: 0
+      state_class: measurement
+    cell_voltage_max_cell_number:
+      name: "${bms0_name} cell voltage max cell number"
+      accuracy_decimals: 0
+      state_class: measurement
+    cell_count_real:
+      name: "${bms0_name} cell count"
+      accuracy_decimals: 0
+      state_class: measurement
+
+    # Additional sensors
+    battery_capacity_remaining:
+      name: "${bms0_name} battery capacity remaining"
+      unit_of_measurement: "Ah"
+      accuracy_decimals: 2
+      state_class: measurement
+    battery_capacity_total:
+      name: "${bms0_name} battery capacity total"
+      unit_of_measurement: "Ah"
+      accuracy_decimals: 2
+      state_class: measurement
+    charging_cycles:
+      name: "${bms0_name} charging cycles"
+      accuracy_decimals: 0
+      state_class: total_increasing
+    total_runtime:
+      name: "${bms0_name} total runtime"
+      unit_of_measurement: "s"
+      accuracy_decimals: 0
+      state_class: total_increasing
+
+    # Temperature sensors
+    temperature_sensor_1:
+      name: "${bms0_name} temperature sensor 1"
+      unit_of_measurement: "°C"
+      accuracy_decimals: 1
+      device_class: temperature
+      state_class: measurement
+    temperature_sensor_2:
+      name: "${bms0_name} temperature sensor 2"
+      unit_of_measurement: "°C"
+      accuracy_decimals: 1
+      device_class: temperature
+      state_class: measurement
+    temperature_powertube:
+      name: "${bms0_name} temperature powertube"
+      unit_of_measurement: "°C"
+      accuracy_decimals: 1
+      device_class: temperature
+      state_class: measurement
+
+  # Slave 1 BMS (Address 0x01) Sensors
+  - platform: jk_bms_simple
+    jk_bms_simple_id: ${bms1}
+    total_voltage:
+      name: "${bms1_name} battery voltage"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+      
+    current:
+      name: "${bms1_name} battery current"
+      unit_of_measurement: "A"
+      accuracy_decimals: 3
+      device_class: current
+      state_class: measurement
+      
+    power:
+      name: "${bms1_name} battery power"
+      unit_of_measurement: "W"
+      accuracy_decimals: 1
+      device_class: power
+      state_class: measurement
+      
+    battery_soc:
+      name: "${bms1_name} battery capacity state of charge"
+      unit_of_measurement: "%"
+      accuracy_decimals: 0
+      device_class: battery
+      state_class: measurement
+      
+    temperature:
+      name: "${bms1_name} temperature sensor 1"
+      unit_of_measurement: "°C"
+      accuracy_decimals: 1
+      device_class: temperature
+      state_class: measurement
+
+    # Cell voltage sensors (16 cells)
+    cell_voltage_01:
+      name: "${bms1_name} cell voltage 01"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_02:
+      name: "${bms1_name} cell voltage 02"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_03:
+      name: "${bms1_name} cell voltage 03"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_04:
+      name: "${bms1_name} cell voltage 04"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_05:
+      name: "${bms1_name} cell voltage 05"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_06:
+      name: "${bms1_name} cell voltage 06"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_07:
+      name: "${bms1_name} cell voltage 07"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_08:
+      name: "${bms1_name} cell voltage 08"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_09:
+      name: "${bms1_name} cell voltage 09"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_10:
+      name: "${bms1_name} cell voltage 10"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_11:
+      name: "${bms1_name} cell voltage 11"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_12:
+      name: "${bms1_name} cell voltage 12"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_13:
+      name: "${bms1_name} cell voltage 13"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_14:
+      name: "${bms1_name} cell voltage 14"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_15:
+      name: "${bms1_name} cell voltage 15"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_16:
+      name: "${bms1_name} cell voltage 16"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+
+    # Cell statistics
+    cell_voltage_min:
+      name: "${bms1_name} cell voltage min"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_max:
+      name: "${bms1_name} cell voltage max"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_average:
+      name: "${bms1_name} cell voltage average"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_delta:
+      name: "${bms1_name} cell voltage delta"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_min_cell_number:
+      name: "${bms1_name} cell voltage min cell number"
+      accuracy_decimals: 0
+      state_class: measurement
+    cell_voltage_max_cell_number:
+      name: "${bms1_name} cell voltage max cell number"
+      accuracy_decimals: 0
+      state_class: measurement
+    cell_count_real:
+      name: "${bms1_name} cell count"
+      accuracy_decimals: 0
+      state_class: measurement
+
+    # Additional sensors
+    battery_capacity_remaining:
+      name: "${bms1_name} battery capacity remaining"
+      unit_of_measurement: "Ah"
+      accuracy_decimals: 2
+      state_class: measurement
+    battery_capacity_total:
+      name: "${bms1_name} battery capacity total"
+      unit_of_measurement: "Ah"
+      accuracy_decimals: 2
+      state_class: measurement
+    charging_cycles:
+      name: "${bms1_name} charging cycles"
+      accuracy_decimals: 0
+      state_class: total_increasing
+    total_runtime:
+      name: "${bms1_name} total runtime"
+      unit_of_measurement: "s"
+      accuracy_decimals: 0
+      state_class: total_increasing
+
+    # Temperature sensors
+    temperature_sensor_1:
+      name: "${bms1_name} temperature sensor 1"
+      unit_of_measurement: "°C"
+      accuracy_decimals: 1
+      device_class: temperature
+      state_class: measurement
+    temperature_sensor_2:
+      name: "${bms1_name} temperature sensor 2"
+      unit_of_measurement: "°C"
+      accuracy_decimals: 1
+      device_class: temperature
+      state_class: measurement
+    temperature_powertube:
+      name: "${bms1_name} temperature powertube"
+      unit_of_measurement: "°C"
+      accuracy_decimals: 1
+      device_class: temperature
+      state_class: measurement
+
+  # Slave 2 BMS (Address 0x02) Sensors  
+  - platform: jk_bms_simple
+    jk_bms_simple_id: ${bms2}
+    total_voltage:
+      name: "${bms2_name} battery voltage"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+      
+    current:
+      name: "${bms2_name} battery current"
+      unit_of_measurement: "A"
+      accuracy_decimals: 3
+      device_class: current
+      state_class: measurement
+      
+    power:
+      name: "${bms2_name} battery power"
+      unit_of_measurement: "W"
+      accuracy_decimals: 1
+      device_class: power
+      state_class: measurement
+      
+    battery_soc:
+      name: "${bms2_name} battery capacity state of charge"
+      unit_of_measurement: "%"
+      accuracy_decimals: 0
+      device_class: battery
+      state_class: measurement
+      
+    temperature:
+      name: "${bms2_name} temperature sensor 1"
+      unit_of_measurement: "°C"
+      accuracy_decimals: 1
+      device_class: temperature
+      state_class: measurement
+
+    # Cell voltage sensors (16 cells)
+    cell_voltage_01:
+      name: "${bms2_name} cell voltage 01"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_02:
+      name: "${bms2_name} cell voltage 02"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_03:
+      name: "${bms2_name} cell voltage 03"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_04:
+      name: "${bms2_name} cell voltage 04"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_05:
+      name: "${bms2_name} cell voltage 05"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_06:
+      name: "${bms2_name} cell voltage 06"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_07:
+      name: "${bms2_name} cell voltage 07"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_08:
+      name: "${bms2_name} cell voltage 08"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_09:
+      name: "${bms2_name} cell voltage 09"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_10:
+      name: "${bms2_name} cell voltage 10"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_11:
+      name: "${bms2_name} cell voltage 11"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_12:
+      name: "${bms2_name} cell voltage 12"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_13:
+      name: "${bms2_name} cell voltage 13"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_14:
+      name: "${bms2_name} cell voltage 14"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_15:
+      name: "${bms2_name} cell voltage 15"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_16:
+      name: "${bms2_name} cell voltage 16"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+
+    # Cell statistics
+    cell_voltage_min:
+      name: "${bms2_name} cell voltage min"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_max:
+      name: "${bms2_name} cell voltage max"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_average:
+      name: "${bms2_name} cell voltage average"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_delta:
+      name: "${bms2_name} cell voltage delta"
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      device_class: voltage
+      state_class: measurement
+    cell_voltage_min_cell_number:
+      name: "${bms2_name} cell voltage min cell number"
+      accuracy_decimals: 0
+      state_class: measurement
+    cell_voltage_max_cell_number:
+      name: "${bms2_name} cell voltage max cell number"
+      accuracy_decimals: 0
+      state_class: measurement
+    cell_count_real:
+      name: "${bms2_name} cell count"
+      accuracy_decimals: 0
+      state_class: measurement
+
+    # Additional sensors
+    battery_capacity_remaining:
+      name: "${bms2_name} battery capacity remaining"
+      unit_of_measurement: "Ah"
+      accuracy_decimals: 2
+      state_class: measurement
+    battery_capacity_total:
+      name: "${bms2_name} battery capacity total"
+      unit_of_measurement: "Ah"
+      accuracy_decimals: 2
+      state_class: measurement
+    charging_cycles:
+      name: "${bms2_name} charging cycles"
+      accuracy_decimals: 0
+      state_class: total_increasing
+    total_runtime:
+      name: "${bms2_name} total runtime"
+      unit_of_measurement: "s"
+      accuracy_decimals: 0
+      state_class: total_increasing
+
+    # Temperature sensors
+    temperature_sensor_1:
+      name: "${bms2_name} temperature sensor 1"
+      unit_of_measurement: "°C"
+      accuracy_decimals: 1
+      device_class: temperature
+      state_class: measurement
+    temperature_sensor_2:
+      name: "${bms2_name} temperature sensor 2"
+      unit_of_measurement: "°C"
+      accuracy_decimals: 1
+      device_class: temperature
+      state_class: measurement
+    temperature_powertube:
+      name: "${bms2_name} temperature powertube"
+      unit_of_measurement: "°C"
+      accuracy_decimals: 1
+      device_class: temperature
+      state_class: measurement
+
+  # Calculated total system sensors
+  - platform: template
+    name: "Total System Voltage"
+    id: total_system_voltage
+    unit_of_measurement: "V"
+    accuracy_decimals: 3
+    device_class: voltage
+    state_class: measurement
+    lambda: |-
+      float total = 0;
+      if (id(${bms0}).get_total_voltage_sensor()->has_state()) total += id(${bms0}).get_total_voltage_sensor()->state;
+      if (id(${bms1}).get_total_voltage_sensor()->has_state()) total += id(${bms1}).get_total_voltage_sensor()->state;
+      if (id(${bms2}).get_total_voltage_sensor()->has_state()) total += id(${bms2}).get_total_voltage_sensor()->state;
+      return total > 0 ? total : {};
+    update_interval: 10s
+
+  - platform: template
+    name: "Total System Current"
+    id: total_system_current
+    unit_of_measurement: "A"
+    accuracy_decimals: 3
+    device_class: current
+    state_class: measurement
+    lambda: |-
+      float total = 0;
+      if (id(${bms0}).get_current_sensor()->has_state()) total += id(${bms0}).get_current_sensor()->state;
+      if (id(${bms1}).get_current_sensor()->has_state()) total += id(${bms1}).get_current_sensor()->state;
+      if (id(${bms2}).get_current_sensor()->has_state()) total += id(${bms2}).get_current_sensor()->state;
+      return total != 0 ? total : {};
+    update_interval: 10s
+
+  - platform: template
+    name: "Total System Power"
+    id: total_system_power
+    unit_of_measurement: "W"
+    accuracy_decimals: 1
+    device_class: power
+    state_class: measurement
+    lambda: |-
+      float total = 0;
+      if (id(${bms0}).get_power_sensor()->has_state()) total += id(${bms0}).get_power_sensor()->state;
+      if (id(${bms1}).get_power_sensor()->has_state()) total += id(${bms1}).get_power_sensor()->state;
+      if (id(${bms2}).get_power_sensor()->has_state()) total += id(${bms2}).get_power_sensor()->state;
+      return total != 0 ? total : {};
+    update_interval: 10s
+
+  - platform: template
+    name: "Average System SOC"
+    id: average_system_soc
+    unit_of_measurement: "%"
+    accuracy_decimals: 1
+    device_class: battery
+    state_class: measurement
+    lambda: |-
+      float total = 0;
+      int count = 0;
+      if (id(${bms0}).get_battery_soc_sensor()->has_state()) { total += id(${bms0}).get_battery_soc_sensor()->state; count++; }
+      if (id(${bms1}).get_battery_soc_sensor()->has_state()) { total += id(${bms1}).get_battery_soc_sensor()->state; count++; }
+      if (id(${bms2}).get_battery_soc_sensor()->has_state()) { total += id(${bms2}).get_battery_soc_sensor()->state; count++; }
+      return count > 0 ? total / count : {};
+    update_interval: 10s
+
+# Binary sensors for status monitoring
+binary_sensor:
+  # Master BMS Status
+  - platform: jk_bms_simple
+    jk_bms_simple_id: ${bms0}
+    status_online:
+      name: "${bms0_name} status online"
+      device_class: connectivity
+      
+    status_charging:
+      name: "${bms0_name} status charging"
+      device_class: battery_charging
+      
+    status_discharging:
+      name: "${bms0_name} status discharging"
+      device_class: power
+
+    status_balancing:
+      name: "${bms0_name} status balancing"
+      device_class: running
+
+  # Slave 1 BMS Status
+  - platform: jk_bms_simple
+    jk_bms_simple_id: ${bms1}
+    status_online:
+      name: "${bms1_name} status online"
+      device_class: connectivity
+      
+    status_charging:
+      name: "${bms1_name} status charging"
+      device_class: battery_charging
+      
+    status_discharging:
+      name: "${bms1_name} status discharging"
+      device_class: power
+
+    status_balancing:
+      name: "${bms1_name} status balancing"
+      device_class: running
+
+  # Slave 2 BMS Status
+  - platform: jk_bms_simple
+    jk_bms_simple_id: ${bms2}
+    status_online:
+      name: "${bms2_name} status online"
+      device_class: connectivity
+      
+    status_charging:
+      name: "${bms2_name} status charging"
+      device_class: battery_charging
+      
+    status_discharging:
+      name: "${bms2_name} status discharging"
+      device_class: power
+
+    status_balancing:
+      name: "${bms2_name} status balancing"
+      device_class: running
+
+  # System-wide status sensors
+  - platform: template
+    name: "All BMS Online"
+    id: all_bms_online
+    device_class: connectivity
+    lambda: |-
+      return id(${bms0}).get_status_online_sensor()->state && 
+             id(${bms1}).get_status_online_sensor()->state && 
+             id(${bms2}).get_status_online_sensor()->state;
+    update_interval: 10s
+
+  - platform: template
+    name: "Any BMS Charging"
+    id: any_bms_charging
+    device_class: battery_charging
+    lambda: |-
+      return id(${bms0}).get_status_charging_sensor()->state || 
+             id(${bms1}).get_status_charging_sensor()->state || 
+             id(${bms2}).get_status_charging_sensor()->state;
+    update_interval: 10s
+
+  - platform: template
+    name: "Any BMS Discharging"
+    id: any_bms_discharging
+    device_class: power
+    lambda: |-
+      return id(${bms0}).get_status_discharging_sensor()->state || 
+             id(${bms1}).get_status_discharging_sensor()->state || 
+             id(${bms2}).get_status_discharging_sensor()->state;
+    update_interval: 10s
+
+# Text sensors for device information
+text_sensor:
+  - platform: template
+    name: ${esp_name} Uptime Human Readable
+    id: uptime_human
+    icon: mdi:clock-start
+    entity_category: diagnostic
+
+  # Device info for each BMS
+  - platform: jk_bms_simple
+    jk_bms_simple_id: ${bms0}
+    device_info:
+      name: "${bms0_name} device info"
+      icon: mdi:information
+
+  - platform: jk_bms_simple
+    jk_bms_simple_id: ${bms1}
+    device_info:
+      name: "${bms1_name} device info"
+      icon: mdi:information
+
+  - platform: jk_bms_simple
+    jk_bms_simple_id: ${bms2}
+    device_info:
+      name: "${bms2_name} device info"
+      icon: mdi:information
+
+  # System status summary
+  - platform: template
+    name: "System Status Summary"
+    id: system_status_summary
+    icon: mdi:battery-heart-variant
+    lambda: |-
+      std::string status = "";
+      int online_count = 0;
+      int charging_count = 0;
+      int discharging_count = 0;
+      
+      if (id(${bms0}).get_status_online_sensor()->state) online_count++;
+      if (id(${bms1}).get_status_online_sensor()->state) online_count++;
+      if (id(${bms2}).get_status_online_sensor()->state) online_count++;
+      
+      if (id(${bms0}).get_status_charging_sensor()->state) charging_count++;
+      if (id(${bms1}).get_status_charging_sensor()->state) charging_count++;
+      if (id(${bms2}).get_status_charging_sensor()->state) charging_count++;
+      
+      if (id(${bms0}).get_status_discharging_sensor()->state) discharging_count++;
+      if (id(${bms1}).get_status_discharging_sensor()->state) discharging_count++;
+      if (id(${bms2}).get_status_discharging_sensor()->state) discharging_count++;
+      
+      status += std::to_string(online_count) + "/3 Online";
+      if (charging_count > 0) status += ", " + std::to_string(charging_count) + " Charging";
+      if (discharging_count > 0) status += ", " + std::to_string(discharging_count) + " Discharging";
+      
+      return status;
+    update_interval: 30s
+
+# Optional: Add some automation examples
+automation:
+  # Alert when any BMS goes offline
+  - id: bms_offline_alert
+    trigger:
+      - platform: state
+        entity_id: 
+          - binary_sensor.${bms0_name}_status_online
+          - binary_sensor.${bms1_name}_status_online
+          - binary_sensor.${bms2_name}_status_online
+        to: 'off'
+        for:
+          seconds: 30
+    action:
+      - logger.log:
+          format: "ALERT: BMS %s went offline!"
+          args: ['trigger->get_name().c_str()']
+          level: WARN
+
+  # Log system power changes
+  - id: power_change_log
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.total_system_power
+        above: 1000  # Log when power exceeds 1kW
+    action:
+      - logger.log:
+          format: "System power: %.1fW (V:%.1fV, I:%.1fA)"
+          args: 
+            - 'id(total_system_power).state'
+            - 'id(total_system_voltage).state'
+            - 'id(total_system_current).state'
+          level: INFO
+
+# WiFi signal strength sensor
+  - platform: wifi_signal
+    name: "${esp_name} WiFi Signal"
+    update_interval: 60s
+    entity_category: diagnostic
+
+# ESP32 internal temperature
+  - platform: internal_temperature
+    name: "${esp_name} Internal Temperature"
+    entity_category: diagnostic

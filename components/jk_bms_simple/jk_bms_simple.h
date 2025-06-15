@@ -59,6 +59,9 @@ class JkBmsSimple : public Component, public uart::UARTDevice {
   // Text sensor setters
   void set_device_info_sensor(text_sensor::TextSensor *sensor) { device_info_sensor_ = sensor; }
 
+  void set_address(uint8_t address) { this->address_ = address; }
+  void set_update_interval(uint32_t update_interval) { this->update_interval_ = update_interval; }
+
   // Getters for template sensors
   sensor::Sensor *get_total_voltage_sensor() { return total_voltage_sensor_; }
   sensor::Sensor *get_current_sensor() { return current_sensor_; }
